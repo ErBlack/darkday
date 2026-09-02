@@ -1,0 +1,59 @@
+.task-manager-list {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 2px;
+
+    span {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+.task-manager-head,
+.task-manager-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 40px 110px;
+    gap: 6px;
+    padding: 2px 4px;
+}
+
+.task-manager-head {
+    background: var(--face);
+    box-shadow: var(--bevel-out);
+
+    span {
+        padding: 1px 0;
+    }
+}
+
+.task-manager-rows {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.task-manager-row {
+    &.task-manager-selected {
+        background: var(--title-from);
+        color: #fff;
+    }
+}
+
+.task-manager-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    img {
+        width: 16px;
+        height: 16px;
+        flex: none;
+    }
+}
+
+.task-manager-footer {
+    display: flex;
+    justify-content: flex-end;
+}

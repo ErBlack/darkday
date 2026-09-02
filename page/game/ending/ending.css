@@ -1,0 +1,27 @@
+.ending {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    background: #000;
+    opacity: 0;
+    cursor: none;
+}
+
+.ending-screen {
+    position: absolute;
+    z-index: 100;
+}
+
+.ending-text {
+    width: min(90vw, 1100px);
+    color: #fff;
+    font: clamp(28px, 4vw, 56px)/1.3 Menlo, Consolas, 'Lucida Console', monospace;
+    text-align: center;
+}
+
+.ending-screen .ending-text {
+    width: 90%;
+    font-size: 44px;
+}

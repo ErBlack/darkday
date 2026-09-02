@@ -1,0 +1,140 @@
+.game-menu-button {
+    position: fixed;
+    left: 8px;
+    top: 8px;
+    z-index: 201;
+    padding: 6px 14px;
+    border: none;
+    background: none;
+    color: #fff;
+    font: 14px 'Playwrite GB S', system-ui;
+    cursor: pointer;
+    opacity: 0.25;
+    transition: opacity 0.25s ease-out;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    body:not(.game) &,
+    body:has(.laptop-screen-full, .laptop-screen-zooming, .ending, .dead-end) &,
+    &.game-menu-button-pressed {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+.game-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    grid-template-columns: minmax(280px, 460px) 1fr;
+    grid-template-rows: minmax(0, 1fr);
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(14px);
+    color: #fff;
+    font-family: 'Playwrite GB S', system-ui;
+    transition: opacity 0.25s ease-out;
+
+    &.game-menu-closed {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    @media (max-width: 640px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.game-menu-column {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 40px;
+    padding: 32px;
+    min-height: 0;
+    box-sizing: border-box;
+    overflow: auto;
+
+    @media (max-height: 689px) and (min-width: 662px) {
+        grid-column: 1 / -1;
+        grid-template-columns: auto auto;
+        grid-template-rows: 1fr;
+        justify-content: space-between;
+        gap: 64px;
+    }
+}
+
+.game-menu-items {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+}
+
+.game-menu-item {
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    color: #fff;
+    font: 22px 'Playwrite GB S', system-ui;
+    text-align: left;
+    opacity: 0.85;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.08);
+        opacity: 1;
+    }
+
+    &:disabled {
+        opacity: 0.3;
+        cursor: default;
+    }
+}
+
+.game-menu-achievements {
+    align-self: end;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    gap: 16px 12px;
+
+    @media (max-height: 689px) and (min-width: 662px) {
+        align-self: start;
+        grid-template-columns: repeat(3, 120px);
+        padding-top: 10px;
+    }
+}
+
+.game-menu-achievement {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 8px;
+    text-align: center;
+    font: 12px/1.35 Menlo, Consolas, 'Lucida Console', monospace;
+
+    img {
+        width: 64px;
+        height: 64px;
+        image-rendering: pixelated;
+    }
+
+    strong {
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    span {
+        opacity: 0.6;
+    }
+
+    &.game-menu-locked {
+        opacity: 0.45;
+
+        img {
+            filter: grayscale(1) brightness(0.5);
+        }
+    }
+}

@@ -1,0 +1,120 @@
+.os-content.dialog {
+    overflow: hidden;
+    background: var(--face);
+    box-shadow: none;
+}
+
+.dialog {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 260px;
+    padding: 12px 14px;
+}
+
+.dialog-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.dialog-text {
+    max-width: 320px;
+    line-height: 1.4;
+    white-space: pre-line;
+}
+
+.dialog-icon {
+    flex: none;
+    width: 32px;
+    height: 32px;
+}
+
+.dialog-open {
+    width: 460px;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    .os-input {
+        min-width: 0;
+    }
+}
+
+.os-select {
+    padding: 0 1px;
+}
+
+.dialog-open-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .dialog-field {
+        flex: 1;
+    }
+
+    .os-tool {
+        padding: 0 3px;
+    }
+}
+
+.dialog-open-list {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    height: 200px;
+    padding: 3px;
+    overflow: auto hidden;
+}
+
+.dialog-open-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    max-width: 200px;
+    height: 18px;
+    padding-right: 12px;
+    white-space: nowrap;
+
+    img {
+        flex: none;
+        width: 16px;
+        height: 16px;
+    }
+
+    span {
+        padding: 0 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &.dialog-open-selected span {
+        background: var(--title-from);
+        color: #fff;
+    }
+}
+
+.dialog-open-bottom {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) 80px;
+    align-items: center;
+    gap: 6px 8px;
+}
+
+.dialog-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+
+    .os-input {
+        flex: 1;
+    }
+}
+
+.dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}

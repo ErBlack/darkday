@@ -1,0 +1,141 @@
+.dayone {
+    container-type: inline-size;
+}
+
+.dayone-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    gap: 3px;
+}
+
+.dayone-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    width: 260px;
+    min-height: 0;
+}
+
+.dayone-list {
+    flex: 1;
+    padding: 2px;
+}
+
+.dayone-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px;
+    border: 0;
+    background: none;
+    text-align: left;
+
+    &.dayone-row-selected {
+        background: var(--title-from);
+        color: #fff;
+
+        .dayone-row-time,
+        .dayone-row-snippet {
+            color: #d0d8f0;
+        }
+    }
+}
+
+.dayone-row-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.dayone-row-date {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dayone-row-time,
+.dayone-row-snippet {
+    color: var(--shadow);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dayone-thumb {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    background: #000;
+}
+
+.dayone-view {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.dayone-article {
+    flex: 1;
+    padding: 16px 20px;
+    font: 13px/1.5 Georgia, 'Times New Roman', serif;
+    user-select: text;
+
+    > * {
+        max-width: 560px;
+    }
+
+    p {
+        margin: 0 0 12px;
+    }
+}
+
+.dayone-date {
+    margin: 0 0 2px;
+    font: bold 15px Tahoma, 'Segoe UI', sans-serif;
+}
+
+.dayone-time {
+    margin: 0 0 14px;
+    font: 11px Tahoma, 'Segoe UI', sans-serif;
+    color: var(--shadow);
+}
+
+.dayone-empty {
+    color: var(--shadow);
+}
+
+.dayone-image,
+.dayone-video {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 0 12px;
+}
+
+.dayone-link {
+    color: #0000ee;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.dayone-nav {
+    display: flex;
+    justify-content: space-between;
+}
+
+@container (max-width: 520px) {
+    .dayone-body {
+        flex-direction: column;
+    }
+
+    .dayone-sidebar {
+        flex: 0 0 40%;
+        width: auto;
+    }
+}

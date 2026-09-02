@@ -1,0 +1,13 @@
+.khaos-frame-cover {
+    position: absolute;
+}
+
+.khaos-shield,
+.khaos-glitch {
+    position: absolute;
+    inset: 0;
+    z-index: 10000;
+    width: 100%;
+    height: 100%;
+    cursor: wait;
+}

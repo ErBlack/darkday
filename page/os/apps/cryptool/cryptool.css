@@ -1,0 +1,207 @@
+.cryptool {
+    --screen: #050a06;
+    --solved: #7dff8e;
+    --unsolved: #245c2c;
+    --dim: #3f8a4a;
+    --glow: 0 0 6px rgba(125, 255, 142, 0.45);
+}
+
+.cryptool [hidden] {
+    display: none;
+}
+
+.cryptool-keys {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.cryptool-screen {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    background: var(--screen);
+    box-shadow: var(--bevel-in);
+    font: 15px/1.9 'Courier New', Courier, monospace;
+    color: var(--solved);
+    text-shadow: var(--glow);
+    user-select: none;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+            repeating-linear-gradient(rgba(0, 0, 0, 0) 0 2px, rgba(0, 0, 0, 0.22) 2px 3px),
+            radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.55) 100%);
+    }
+
+    button {
+        font: inherit;
+        color: var(--dim);
+        text-shadow: inherit;
+        background: none;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            color: var(--solved);
+        }
+
+        &:disabled {
+            color: var(--unsolved);
+            cursor: default;
+        }
+    }
+}
+
+.cryptool-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 20px;
+    border-bottom: 1px solid var(--unsolved);
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--dim);
+}
+
+.cryptool-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cryptool-lock {
+    display: flex;
+    color: var(--dim);
+
+    &.cryptool-lock-open {
+        color: var(--solved);
+        filter: drop-shadow(0 0 4px rgba(125, 255, 142, 0.6));
+    }
+}
+
+.cryptool-copyable .cryptool-copy {
+    margin-left: 1ch;
+    visibility: hidden;
+}
+
+.cryptool-copyable:hover .cryptool-copy {
+    visibility: visible;
+}
+
+.cryptool-page {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 24px 32px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--dim) transparent;
+}
+
+.cryptool-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    max-width: 560px;
+    margin: 0 0 22px;
+}
+
+.cryptool-date {
+    &::before {
+        content: '> ';
+        color: var(--dim);
+    }
+}
+
+.cryptool-body {
+    max-width: 560px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.cryptool-letter {
+    cursor: text;
+
+    &.cryptool-unsolved {
+        color: var(--unsolved);
+        text-shadow: none;
+    }
+
+    &.cryptool-solved {
+        color: var(--solved);
+    }
+
+    &.cryptool-same {
+        text-decoration: underline dotted var(--dim);
+        text-underline-offset: 3px;
+    }
+
+    &.cryptool-caret {
+        background: var(--solved);
+        color: var(--screen);
+        text-shadow: none;
+        text-decoration: none;
+        animation: cryptool-caret 1s steps(1) infinite;
+    }
+}
+
+.cryptool-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.cryptool-link-solved {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+
+    .cryptool-letter {
+        cursor: pointer;
+    }
+
+    &:hover .cryptool-letter {
+        color: #ffffff;
+        text-shadow: 0 0 8px rgba(125, 255, 142, 0.9);
+    }
+}
+
+@keyframes cryptool-caret {
+    50% {
+        background: var(--dim);
+    }
+}
+
+.cryptool-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 20px;
+    border-top: 1px solid var(--unsolved);
+}
+
+.cryptool-dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 10px;
+    min-width: 0;
+}
+
+.cryptool-dot-active {
+    color: var(--solved);
+}

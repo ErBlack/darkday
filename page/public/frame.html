@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <style>
+            html,
+            body,
+            iframe {
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                border: 0;
+                display: block;
+                background: #fff;
+            }
+
+            object {
+                position: fixed;
+                width: 1px;
+                height: 1px;
+                opacity: 0;
+                pointer-events: none;
+            }
+        </style>
+    </head>
+    <body>
+        <script type="module">
+            const url = new URL(new URLSearchParams(location.search).get('url'));
+            const send = message => parent.postMessage(message, location.origin);
+            const meta = document.createElement('meta');
+            meta.httpEquiv = 'Content-Security-Policy';
+            meta.content = `frame-src https://${url.host} http://${url.host}`;
+            document.head.append(meta);
+
+            document.addEventListener('securitypolicyviolation', event => {
+                if (event.effectiveDirective !== 'frame-src') return;
+
+                send({ type: 'frame-blocked', origin: event.blockedURI });
+            });
+
+            const embed = () => {
+                const frame = document.createElement('iframe');
+                frame.addEventListener('load', () => send({ type: 'frame-loaded' }));
+                frame.src = url.href;
+                document.body.append(frame);
+            };
+
+            const probe = document.createElement('object');
+            probe.type = 'text/html';
+            probe.addEventListener('load', () => {
+                probe.remove();
+                embed();
+            });
+            probe.addEventListener('error', () => {
+                probe.remove();
+                send({ type: 'frame-failed' });
+            });
+            probe.data = url.href;
+            document.body.append(probe);
+        </script>
+    </body>
+</html>

@@ -1,0 +1,192 @@
+.logon {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    grid-template-rows: 80px 1fr 80px;
+    background: linear-gradient(#5a7edc, #3d64c9 60%, #4a72d6);
+    color: #fff;
+    font: 15px 'Franklin Gothic Medium', 'Trebuchet MS', Tahoma, sans-serif;
+    user-select: none;
+}
+
+.logon-top,
+.logon-bottom {
+    background: #00309c;
+}
+
+.logon-top {
+    border-bottom: 2px solid #8fb0ff;
+}
+
+.logon-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    border-top: 2px solid #f0a040;
+}
+
+.logon-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+}
+
+.logon-left {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 60px;
+    border-right: 1px solid rgba(255, 255, 255, 0.35);
+    font-size: 26px;
+    text-align: right;
+    line-height: 1.2;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.logon-left span {
+    max-width: 260px;
+}
+
+.logon-users {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-left: 60px;
+}
+
+.logon-user {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 340px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover,
+    &.logon-user-active {
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    &.logon-user-active {
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4);
+    }
+
+    .logon-dim &:not(.logon-user-active) {
+        opacity: 0.45;
+    }
+}
+
+.logon-picture {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    box-sizing: border-box;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    background: #b7d1ff;
+    overflow: hidden;
+
+    img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.logon-user-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.logon-name {
+    font-size: 20px;
+    font-weight: bold;
+    user-select: all;
+}
+
+.logon-prompt {
+    font-size: 12px;
+    color: #e4ecff;
+}
+
+.logon-field {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.logon-input {
+    width: 160px;
+    height: 22px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    border: 1px solid #fff;
+    border-radius: 3px;
+    background: #fff;
+    font: 12px Tahoma, sans-serif;
+    outline: none;
+}
+
+.logon-go,
+.logon-help {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+
+    img {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+
+.logon-message {
+    max-width: 240px;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.logon-off {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    color: #fff;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+
+    img {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.logon-note {
+    max-width: 380px;
+    font-size: 12px;
+    line-height: 1.35;
+    color: #d0dcff;
+}
+
+.logon-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}

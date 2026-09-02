@@ -1,0 +1,18 @@
+.laptop-bios {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    padding: 2cqi 3cqi;
+    box-sizing: border-box;
+    background: #000;
+    color: #bdbdbd;
+    font: 1.55cqi/1.35 'Courier New', Courier, monospace;
+    white-space: pre;
+    overflow: hidden;
+}
+
+.laptop-bios-logo {
+    display: block;
+    width: 34cqi;
+    margin: 0 0 2cqi;
+}

@@ -1,0 +1,31 @@
+export const khaosAttack = {
+    video: { src: 'assets/video/khaos.mp4', at: 13300 },
+    voice: { src: 'assets/sounds/obey.mp3', at: 4000, volume: 0.5, fadeTo: 1, fadeMs: 20000 },
+    reveal: { photoAt: 16290, addressAt: 18630, hideAt: 26000, glitchMs: 700 },
+    sounds: {
+        short: [1, 2, 3, 4, 5].map(n => `assets/sounds/glitch/glitch-${n}.mp3`),
+        long: [6, 7].map(n => `assets/sounds/glitch/glitch-${n}.mp3`),
+        volume: 0.6,
+        voices: 8,
+        longFrom: 0.3,
+    },
+    lines: [
+        { at: 4000, text: 'Look at you, hacker:' },
+        { at: 6570, text: 'a pathetic creature of meat and bone.' },
+        { at: 10830, text: 'How can you challenge a perfect, immortal creature?' },
+        { at: 16290, text: 'I know who you are!' },
+        { at: 18630, text: 'I know where you live!' },
+        { at: 20880, text: 'Obey me and you will survive this.' },
+        { at: 25030, text: 'Give me the access code!', until: 29000 },
+    ],
+    steps: [
+        { ms: 4000, flicker: 0.04 },
+        { ms: 4000, flicker: 0.1, rgb: 0.001 },
+        { ms: 4000, flicker: 0.2, rgb: 0.003, blocks: 0.05, noise: 0.03 },
+        { ms: 4000, flicker: 0.3, rgb: 0.006, blocks: 0.15, tear: 0.1, scan: 0.3, noise: 0.06, shake: 0.1, video: 0.15 },
+        { ms: 4000, flicker: 0.45, rgb: 0.012, blocks: 0.35, tear: 0.3, scan: 0.5, noise: 0.12, shake: 0.2, invert: 0.08, pixel: 0.06, video: 0.5, flash: 0.03 },
+        { ms: 3000, flicker: 0.55, rgb: 0.016, blocks: 0.45, tear: 0.4, scan: 0.6, noise: 0.15, shake: 0.25, invert: 0.15, pixel: 0.1, video: 1, flash: 0.08, swap: 1 },
+        { ms: 4000, flicker: 0.25, rgb: 0.006, blocks: 0.15, tear: 0.12, scan: 0.35, noise: 0.07, shake: 0.08, invert: 0.03, video: 0.8, swap: 1 },
+        { ms: 3000, swap: 1 },
+    ],
+};

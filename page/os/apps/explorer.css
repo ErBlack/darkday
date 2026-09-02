@@ -1,0 +1,46 @@
+.explorer-address {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 1px 2px 2px;
+}
+
+.explorer-items {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 4px;
+    padding: 6px;
+}
+
+.explorer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 84px;
+    padding: 6px 2px;
+    text-align: center;
+
+    img {
+        width: 32px;
+        height: 32px;
+    }
+
+    span {
+        padding: 1px 3px;
+        overflow-wrap: anywhere;
+    }
+
+    &.explorer-selected {
+        img {
+            filter: brightness(0.75) sepia(1) hue-rotate(190deg) saturate(3);
+        }
+
+        span {
+            background: var(--title-from);
+            color: #fff;
+        }
+    }
+}
