@@ -1,0 +1,106 @@
+body {
+    --color-text: #322D6F;
+    margin: 0;
+    padding: 0;
+    background-color: #010101;
+    background-image: url('/assets/coridor.jpg'), linear-gradient(to bottom, #80897C, #110E07);
+    background-size: auto 100%, cover;
+    background-attachment: fixed, fixed;
+    background-position: center, center;
+    display: grid;
+    justify-content: center;
+    min-height: 100vh;
+    font-weight: 500;
+    font-style: normal;
+    font-size: 16px;
+}
+
+#invitation {
+    aspect-ratio: 1/1.5;
+    background: url('/assets/paper.webp') no-repeat center/cover;
+    padding: 3rem;
+    font-family: 'Playwrite GB S', system-ui;
+    font-optical-sizing: auto;
+    color: var(--color-text);
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    box-sizing: border-box;
+    width: clamp(390px, 65vw, 850px);
+
+    section:not(:last-child) {
+        margin-bottom: clamp(0.5rem, 5vw, 4rem);
+    }
+
+    h1 {
+        margin: 0;
+        text-align: center;
+        font-size: clamp(3rem, 8vw, 10rem);
+        font-weight: 100;
+    }
+
+    h2 {
+        font-size: clamp(2rem, 3vw, 3rem);
+        margin: 0 0 clamp(0.25em, 1em, 0.6em) 0;
+        font-weight: 300;
+    }
+
+    p,
+    ul {
+        line-height: 1.35em;
+    }
+
+    p:not(:last-child),
+    ul:not(:last-child) {
+        line-height: 1.35em;
+        margin: 0 0 clamp(1rem, 2vw, 2rem) 0;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    li {
+        margin: 0;
+        display: grid;
+        gap: 1em;
+        grid-template-columns: 5em auto;
+        margin-bottom: 0.25em;
+    }
+
+    svg {
+        --size: clamp(3rem, 7vw, 6rem);
+        width: var(--size);
+        height: var(--size);
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 0.74;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        vector-effect: non-scaling-stroke;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .links {
+        display: grid;
+        gap: 1.5em;
+        grid-template-columns: repeat(3, max-content);
+        justify-content: space-between;
+    }
+
+    a {
+        display: grid;
+        gap: 0.5em;
+        color: var(--color-text);
+        text-decoration: none;
+        justify-items: center;
+    }
+
+    a:hover {
+        svg {
+            transform: scale(1.05);
+        }
+    }
+
+}
+
+
