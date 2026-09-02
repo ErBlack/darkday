@@ -1,0 +1,40 @@
+.os-context {
+    position: absolute;
+    z-index: 2000;
+    min-width: 150px;
+    padding: 2px;
+    background: #fff;
+    border: 1px solid var(--shadow);
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.35);
+    font: 11px Tahoma, 'Segoe UI', sans-serif;
+    color: #000;
+}
+
+.os-context-item {
+    display: block;
+    width: 100%;
+    padding: 3px 18px 3px 20px;
+    border: 0;
+    background: none;
+    text-align: left;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+        background: #316ac5;
+        color: #fff;
+    }
+
+    &:disabled {
+        color: var(--shadow);
+    }
+}
+
+.os-context-default {
+    font-weight: 700;
+}
+
+.os-context-separator {
+    height: 1px;
+    margin: 3px 1px;
+    background: var(--shadow);
+}

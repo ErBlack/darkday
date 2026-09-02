@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>uploads/ — Object Storage</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="storage.css" />
+    </head>
+    <body class="pending">
+        <header class="console-bar">
+            <span class="console-brand">Civis Cloud</span>
+            <span class="console-search">Search services, buckets, objects</span>
+            <span class="console-region">eu-central-1</span>
+            <span class="console-user">thomas.anderson</span>
+            <button class="console-signout" type="button">Sign out</button>
+        </header>
+
+        <div class="console">
+            <nav class="console-nav">
+                <div class="console-nav-title">Object Storage</div>
+                <a class="active">Buckets</a>
+                <a>Access points</a>
+                <a>Access logs</a>
+            </nav>
+
+            <main class="console-main">
+                <div class="crumbs">
+                    <a>Buckets</a> › <a>civis-internal</a> › <span>uploads/</span>
+                </div>
+
+                <div class="flash" hidden></div>
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h1>uploads/</h1>
+                            <div class="muted">s3://civis-internal/uploads/</div>
+                        </div>
+                        <div class="actions">
+                            <button class="btn" type="button" data-action="refresh">Refresh</button>
+                            <button class="btn" type="button" data-action="run" disabled>Run</button>
+                            <button class="btn btn-primary" type="button" data-action="upload">Upload</button>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <span class="tab active">Objects</span>
+                        <span class="tab">Properties</span>
+                        <span class="tab">Permissions</span>
+                    </div>
+
+                    <table class="objects">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Size</th>
+                                <th>Storage class</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="object">config.yaml</span></td>
+                                <td>yaml</td>
+                                <td>1.2 KB</td>
+                                <td>Standard</td>
+                            </tr>
+                            <tr>
+                                <td><span class="object">deploy.sh</span></td>
+                                <td>sh</td>
+                                <td>3.4 KB</td>
+                                <td>Standard</td>
+                            </tr>
+                            <tr>
+                                <td><span class="object">runtime.tar.gz</span></td>
+                                <td>gz</td>
+                                <td>48.6 MB</td>
+                                <td>Standard</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+        <script src="storage.js"></script>
+    </body>
+</html>

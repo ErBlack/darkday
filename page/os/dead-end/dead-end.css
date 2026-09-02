@@ -1,0 +1,39 @@
+.dead-end {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    display: grid;
+    place-items: center;
+    background: #000;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+
+    &.dead-end-dark {
+        opacity: 1;
+    }
+
+    &.dead-end-ready {
+        cursor: pointer;
+    }
+}
+
+.dead-end-text {
+    width: min(90vw, 1000px);
+    color: #fff;
+    font: clamp(20px, 3vw, 40px)/1.4 Menlo, Consolas, 'Lucida Console', monospace;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+
+    &.dead-end-text-shown {
+        opacity: 1;
+    }
+
+    p {
+        margin: 0;
+    }
+
+    p + p {
+        margin-top: 0.8em;
+    }
+}

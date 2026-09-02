@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Employee Sign In — Civis</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="civis.css" />
+    </head>
+    <body>
+        <header class="site-header">
+            <a class="brand" href="index.html">Civis</a>
+            <nav class="site-nav">
+                <a href="solutions.html">Solutions</a>
+                <a href="about.html">About</a>
+                <a href="offices.html">Offices</a>
+                <a href="careers.html">Careers</a>
+                <a href="downloads.html">Resources</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <a class="button button-ghost" href="login.html">Employee Sign In</a>
+        </header>
+
+        <main class="auth">
+            <form class="auth-card form auth-form" novalidate>
+                <h1>Employee Sign In</h1>
+                <span class="muted">Use your Civis workspace account.</span>
+                <label>Email<input type="email" name="email" autocomplete="off" spellcheck="false" required /></label>
+                <label>Password<input type="password" name="password" autocomplete="off" required /></label>
+                <div class="form-note" hidden></div>
+                <button class="button" type="submit">Sign in</button>
+                <div class="auth-links">
+                    <a href="contact.html">Forgot password?</a>
+                    <a href="contact.html">Need help?</a>
+                </div>
+            </form>
+        </main>
+        <script src="civis.js"></script>
+    </body>
+</html>

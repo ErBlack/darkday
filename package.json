@@ -1,0 +1,17 @@
+{
+  "name": "darkday",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "vaults": "node tools/build-vaults.js",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.1.0"
+  },
+  "dependencies": {
+    "modern-screenshot": "^4.7.0"
+  }
+}

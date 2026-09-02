@@ -1,0 +1,75 @@
+.laptop-screen {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    transform-origin: 0 0;
+    overflow: hidden;
+    pointer-events: none;
+    container-type: inline-size;
+
+    &.laptop-screen-hidden {
+        display: none;
+    }
+
+    &.laptop-screen-full {
+        pointer-events: auto;
+    }
+
+    .os-desktop {
+        z-index: 3;
+    }
+
+    &.laptop-screen-fading .os-desktop,
+    &.laptop-screen-fading .laptop-backlight,
+    &.laptop-screen-fading .laptop-shutdown,
+    &.laptop-screen-fading .laptop-glass {
+        transition: opacity 0.5s ease-out;
+    }
+
+    &.laptop-screen-off .os-desktop,
+    &.laptop-screen-off .laptop-backlight,
+    &.laptop-screen-off .laptop-shutdown,
+    &.laptop-screen-off .laptop-glass {
+        opacity: 0;
+    }
+}
+
+.laptop-shutdown {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, #4a86c8, #2a5590 80%);
+    color: #fff;
+    font: 2.4cqi Tahoma, 'Segoe UI', sans-serif;
+    text-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.4);
+    pointer-events: auto;
+
+    &.laptop-shutdown-black {
+        background: #000;
+        color: transparent;
+        text-shadow: none;
+    }
+}
+
+.laptop-backlight {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: #171d19;
+}
+
+.laptop-glass {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background: url('/assets/laptop.jpg') no-repeat;
+    background-size: calc(100% * 2912 / 1012) calc(100% * 1632 / 759);
+    background-position: calc(100% * 1000 / 1900) calc(100% * 212 / 873);
+    mix-blend-mode: screen;
+    opacity: var(--glass, 0.55);
+}

@@ -1,0 +1,11 @@
+.run .dialog-body > img {
+    width: 32px;
+    height: 32px;
+}
+
+.run-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 360px;
+}
