@@ -1,14 +1,12 @@
+import { createGame } from './game/index.js';
+
 const EGG_DATE = new Date('2026-10-10T08:00:00.000Z');
 const HOLD_MS = 2000;
 const HOLD_TOLERANCE = 10;
 const EDGE_RATIO = 0.1;
 
-const isEggActive = () => Date.now() >= EGG_DATE || location.search === '?debug=1';
-
-const startGame = () => {
-    document.body.classList.add('game');
-    document.dispatchEvent(new CustomEvent('darkday:start'));
-};
+const isDebug = () => location.search === '?debug=1';
+const isEggActive = () => Date.now() >= EGG_DATE || isDebug();
 
 const init = () => {
     if (!isEggActive()) return;
@@ -16,6 +14,15 @@ const init = () => {
     const invitation = document.getElementById('invitation');
 
     document.body.classList.add('egg');
+
+    const game = createGame({ debug: isDebug() });
+
+    if (isDebug()) window.game = game;
+
+    const startGame = () => {
+        document.body.classList.add('game');
+        game.start();
+    };
 
     let hold = null;
     let drag = null;

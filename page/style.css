@@ -3,10 +3,8 @@ body {
     margin: 0;
     padding: 0;
     background-color: #010101;
-    background-image: url('/assets/coridor.jpg'), linear-gradient(to bottom, #80897C, #110E07);
-    background-size: cover;
-    background-attachment: fixed, fixed;
-    background-position: center, center;
+    background-image: linear-gradient(to bottom, #80897c, #110e07);
+    background-attachment: fixed;
     display: grid;
     justify-content: center;
     min-height: 100vh;
@@ -134,4 +132,73 @@ body.game {
     #invitation {
         display: none;
     }
+}
+#game {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    touch-action: none;
+}
+
+#invitation {
+    position: relative;
+    z-index: 3;
+}
+
+#backdrop,
+#game {
+    filter: blur(0.9px);
+}
+
+#vignette,
+#grain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 2;
+    pointer-events: none;
+}
+
+#vignette {
+    background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+#grain {
+    overflow: hidden;
+    opacity: 0.16;
+    mix-blend-mode: overlay;
+}
+
+body.game #grain::before {
+    animation: grain 0.33s steps(1) infinite;
+}
+
+#grain::before {
+    content: '';
+    position: absolute;
+    inset: -256px;
+    background: url('/assets/grain.png') 0 0 / 256px 256px repeat;
+}
+
+@keyframes grain {
+    0% { transform: translate(0, 0); }
+    12.5% { transform: translate(-96px, 48px); }
+    25% { transform: translate(40px, -120px); }
+    37.5% { transform: translate(-150px, -30px); }
+    50% { transform: translate(110px, 90px); }
+    62.5% { transform: translate(-20px, 140px); }
+    75% { transform: translate(140px, -70px); }
+    87.5% { transform: translate(-110px, -110px); }
+}
+
+#backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 0;
+    background: url('/assets/corridor.jpg') center / cover no-repeat;
 }
