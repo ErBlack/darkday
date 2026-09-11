@@ -1,5 +1,3 @@
-import { drawCover } from './renderer.js';
-
 const FADE_MS = 300;
 
 export class Background {
@@ -7,8 +5,8 @@ export class Background {
         this.image = image;
     }
 
-    draw(ctx) {
-        drawCover(ctx, this.image);
+    draw(renderer) {
+        renderer.drawCover(this.image);
     }
 }
 
@@ -75,7 +73,7 @@ export class VideoLayer {
     }
 
     #currentOffset() {
-        if (!this.#offset) return undefined;
+        if (!this.#offset) return {};
 
         const { from, to } = this.#offset;
         const { currentTime, duration } = this.#video;
@@ -84,12 +82,10 @@ export class VideoLayer {
         return { dx: from.dx + (to.dx - from.dx) * t, dy: from.dy + (to.dy - from.dy) * t };
     }
 
-    draw(ctx) {
+    draw(renderer) {
         if (this.#alpha <= 0 || this.#video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
 
-        ctx.globalAlpha = this.#alpha;
-        drawCover(ctx, this.#video, this.#currentOffset());
-        ctx.globalAlpha = 1;
+        renderer.drawCover(this.#video, { ...this.#currentOffset(), alpha: this.#alpha });
     }
 }
 
@@ -98,17 +94,10 @@ export class Debug {
         this.getHotspots = getHotspots;
     }
 
-    draw(ctx) {
-        ctx.save();
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
-        ctx.fillStyle = 'rgba(255, 0, 0, 0.15)';
-
+    draw(renderer) {
         for (const { rect } of this.getHotspots()) {
-            ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
-            ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+            renderer.fillRect(rect, [1, 0, 0, 0.15]);
+            renderer.strokeRect(rect, [1, 0, 0, 0.8], 4);
         }
-
-        ctx.restore();
     }
 }

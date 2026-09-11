@@ -65,6 +65,7 @@ const init = () => {
     };
 
     const flyAway = dx => {
+        document.body.classList.add('reveal');
         invitation.classList.add('flying');
         setPosition(offset.x + dx * innerWidth, offset.y, 0.2);
         invitation.addEventListener('transitionend', startGame, { once: true });

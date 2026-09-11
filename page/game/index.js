@@ -89,6 +89,7 @@ export const createGame = ({ debug = false } = {}) => {
         start: async () => {
             unlock().catch(() => {});
             await ready;
+            renderer.setGrainAnimated(true);
             input.enabled = true;
         },
     };
