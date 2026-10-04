@@ -54,7 +54,10 @@ const init = async () => {
     };
 
     const newGame = state => {
-        const next = createGame({ state: autosaveState(state, () => inGame() && game === next && !next.ending), onEnd: exit });
+        const next = createGame({
+            state: autosaveState(state, () => inGame() && game === next && !next.ending, () => next.busy()),
+            onEnd: exit,
+        });
 
         game = next;
         window.game = game;
@@ -151,13 +154,22 @@ const init = async () => {
     const flyAway = dx => {
         invitation.classList.add('flying');
         setPosition(offset.x + dx * innerWidth, offset.y);
-        invitation.addEventListener('transitionend', startGame, { once: true });
+
+        const onEnd = event => {
+            if (event.target !== invitation || event.propertyName !== 'transform') return;
+
+            invitation.removeEventListener('transitionend', onEnd);
+            startGame();
+        };
+
+        invitation.addEventListener('transitionend', onEnd);
     };
 
     const onPointerDown = event => {
         if (!event.isPrimary) return;
 
         cancelHold();
+        invitation.setPointerCapture(event.pointerId);
 
         hold = {
             x: event.clientX,

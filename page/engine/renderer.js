@@ -73,6 +73,7 @@ export class Renderer {
         this.#frame = null;
         this.#layers = [];
         this.#overlays = [];
+        this.#gl.getExtension('WEBGL_lose_context')?.loseContext();
     }
 
     get canvas() {

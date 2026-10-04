@@ -9,15 +9,15 @@ export const loadVideo = url => {
         video.preload = 'auto';
         video.load();
 
-        videos.set(
-            url,
-            new Promise((resolve, reject) => {
-                if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) return resolve(video);
+        const promise = new Promise((resolve, reject) => {
+            if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) return resolve(video);
 
-                video.addEventListener('loadeddata', () => resolve(video), { once: true });
-                video.addEventListener('error', () => reject(video.error), { once: true });
-            }),
-        );
+            video.addEventListener('loadeddata', () => resolve(video), { once: true });
+            video.addEventListener('error', () => reject(video.error), { once: true });
+        });
+
+        promise.catch(() => videos.delete(url));
+        videos.set(url, promise);
     }
 
     return videos.get(url);

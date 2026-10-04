@@ -29,6 +29,7 @@ import { registerVaultPages } from './apps/browser/register-vault-pages.js';
 import { isDeadEnd } from './dead-end/is-dead-end.js';
 import { playDeadEnd } from './dead-end/play-dead-end.js';
 import { DEAD_END_PATHS } from './dead-end/dead-end-paths.js';
+import { cancelSpies } from './spy/spy.js';
 
 const APPS = [run, explorer, mirror, maps, browser, dayOne, crypTool, taskManager];
 const RECYCLE_BIN = 'Recycle Bin';
@@ -290,6 +291,7 @@ export class Desktop {
     }
 
     destroy() {
+        cancelSpies();
         this.#observer.disconnect();
 
         for (const window of [...this.windows.tasks]) this.windows.close(window);

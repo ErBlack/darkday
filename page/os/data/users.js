@@ -1,8 +1,8 @@
 export const users = [
     {
-        name: 'nikolic_anaaa',
-        picture: 'assets/os/users/nikolic_anaaa.jpg',
-        wallpaper: 'assets/os/wallpapers/nikolic_anaaa.webp',
+        name: 'drifter_ana',
+        picture: 'assets/os/users/drifter_ana.jpg',
+        wallpaper: 'assets/os/wallpapers/drifter_ana.webp',
         vault: 'ana',
         hint: 'my date of birth',
     },

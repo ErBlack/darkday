@@ -1,10 +1,18 @@
 import { observe } from './observe.js';
 import { writeAutosave } from './write-autosave.js';
 
-export const autosaveState = (state, isActive) => {
+const RETRY_MS = 120;
+
+export const autosaveState = (state, isActive, isBusy = () => false) => {
     let pending = false;
 
     const flush = () => {
+        if (isBusy()) {
+            setTimeout(flush, RETRY_MS);
+
+            return;
+        }
+
         pending = false;
 
         if (isActive()) writeAutosave(state);

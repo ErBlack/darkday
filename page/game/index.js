@@ -50,6 +50,8 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
     let inventory = null;
     let stage = null;
     let context = null;
+    let items = null;
+    let transitioning = 0;
 
     const input = new Input(renderer, {
         hotspots: () => stage?.hotspots() ?? [],
@@ -79,29 +81,39 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
     };
 
     const go = async (video, next) => {
+        transitioning += 1;
         input.enabled = false;
         screen.show(false);
 
-        const [element, scene] = await Promise.all([loadVideo(`assets/video/${video}.mp4`), buildScene(SCENES[next](context))]);
+        try {
+            const [element, scene] = await Promise.all([loadVideo(`assets/video/${video}.mp4`), buildScene(SCENES[next](context))]);
 
-        const layer = new VideoLayer(element, {
-            rate: VIDEO_RATE,
-            onSwap: () => show(next, scene),
-        });
+            const layer = new VideoLayer(element, {
+                rate: VIDEO_RATE,
+                onSwap: () => show(next, scene),
+            });
 
-        compose([layer]);
-        await layer.promise;
-        compose();
-        input.enabled = true;
+            compose([layer]);
+            await layer.promise;
+            compose();
+            input.enabled = true;
+        } finally {
+            transitioning -= 1;
+        }
     };
 
     const playVideo = async (url, rate) => {
+        transitioning += 1;
         screen.show(false);
 
-        const layer = new VideoLayer(await loadVideo(url), { rate });
+        try {
+            const layer = new VideoLayer(await loadVideo(url), { rate });
 
-        compose([layer]);
-        await layer.promise;
+            compose([layer]);
+            await layer.promise;
+        } finally {
+            transitioning -= 1;
+        }
     };
 
     let ending = false;
@@ -129,8 +141,15 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
         });
     };
 
+    const busy = () =>
+        transitioning > 0 ||
+        screen.busy ||
+        screen.zooming ||
+        state.flags.keyState === 'falling' ||
+        (items !== null && Object.values(items).some(item => item.sprite.busy));
+
     const ready = (async () => {
-        const items = await loadItems({ state, renderer });
+        items = await loadItems({ state, renderer });
         inventory = new Inventory({ renderer, state, items, status });
         stage = new Stage({ state, inventory, items });
         context = { state, items, inventory, status, screen, open: item => stage.open(item), go };
@@ -171,6 +190,7 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
         status,
         achievements,
         screen,
+        busy,
         get ending() {
             return ending;
         },
