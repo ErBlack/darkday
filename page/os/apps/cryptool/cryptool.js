@@ -134,7 +134,17 @@ export const crypTool = {
             const button = element('button', 'cryptool-copy', parent);
             button.type = 'button';
             button.textContent = '[COPY]';
-            button.addEventListener('click', () => navigator.clipboard.writeText(text()).catch(() => {}));
+
+            let timer = null;
+
+            button.addEventListener('click', () => {
+                navigator.clipboard.writeText(text()).catch(() => {});
+                button.textContent = '[COPIED]';
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    button.textContent = '[COPY]';
+                }, 250);
+            });
 
             return button;
         };
@@ -213,7 +223,7 @@ export const crypTool = {
             keysLabel.textContent = `KEYS ${keys}/${ALPHABET.length}`;
             lock.innerHTML = open ? UNLOCKED : LOCKED;
             lock.classList.toggle('cryptool-lock-open', open);
-            copy.disabled = !solvedEntry(entry);
+            copy.hidden = !solvedEntry(entry);
             watch.show(solvedEntry(entry) ? entry.spy ?? null : null);
             previous.disabled = index === 0;
             next.disabled = index === entries.length - 1;
@@ -222,7 +232,7 @@ export const crypTool = {
             entries.forEach((_, i) => {
                 const dot = element('button', 'cryptool-dot', dots);
                 dot.type = 'button';
-                dot.textContent = i === index ? '•' : 'o';
+                dot.textContent = i === index ? '●' : '○';
                 dot.classList.toggle('cryptool-dot-active', i === index);
                 dot.addEventListener('click', () => go(i));
             });

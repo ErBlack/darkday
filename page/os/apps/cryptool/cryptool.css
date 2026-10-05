@@ -1,7 +1,7 @@
 .cryptool {
     --screen: #050a06;
     --solved: #7dff8e;
-    --unsolved: #245c2c;
+    --unsolved: #32803d;
     --dim: #3f8a4a;
     --glow: 0 0 6px rgba(125, 255, 142, 0.45);
 }
