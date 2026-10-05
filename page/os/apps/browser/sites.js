@@ -15,6 +15,6 @@ export const sites = [
     { href: 'about:history', kind: 'history', title: 'History', favicon: 'assets/os/icons/history.png' },
     { href: 'about:blank', kind: 'blank', title: 'Blank Page', favicon: 'assets/os/icons/file.png' },
     { host: 'google.com', direct: true, embed: google, title: googleTitle },
-    { host: 'civisvector.com', root: 'civis', title: 'Civis', favicon: 'assets/os/icons/file.png' },
+    { host: 'civisvector.com', root: 'civis', title: 'Civis', favicon: 'civis/favicon.png' },
     { host: 'dnevnisignal.rs', vault: true, title: 'Dnevni Signal', favicon: 'assets/os/icons/file.png' },
 ];

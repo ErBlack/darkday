@@ -57,6 +57,7 @@ export class Desktop {
     onStandBy = null;
     onTurnOff = null;
     onEnding = null;
+    onEndingStart = null;
     startMenu = null;
 
     get user() {
@@ -124,6 +125,7 @@ export class Desktop {
         this.taskbar = new Taskbar(bar, window => this.windows.toggle(window));
         this.windows = new WindowManager(area, this.taskbar, state, this.shell);
         this.shell.khaos = new Khaos(state, this.windows, this.root);
+        this.shell.khaos.onSolve = () => this.onEndingStart?.();
         this.shell.khaos.onSolved = async password => {
             await this.shell.openVault('ending', password);
             this.onEnding?.('bad');

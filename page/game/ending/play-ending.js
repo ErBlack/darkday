@@ -83,7 +83,7 @@ export const playEnding = async (script, variant, { screen, code, media, showArt
     let fadeAt = start + blackoutAt - script.fadeMs;
 
     if (video) {
-        fadeAt = performance.now() + video.duration * 1000 / rate - script.fadeMs;
+        fadeAt = performance.now() + video.duration * 1000 / rate - script.fadeMs - script.videoFadeLeadMs;
         playVideo(media(variant.video), rate).catch(() => {});
 
         for (const sound of variant.videoSounds ?? []) playSound(media(sound.src), { delay: sound.at / rate, volume: sound.volume ?? 1 }).catch(() => {});

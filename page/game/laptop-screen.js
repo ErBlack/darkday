@@ -49,10 +49,12 @@ export class LaptopScreen {
     #visible = false;
     #glow = null;
     #fan = null;
+    #ledTimer = null;
 
     led = 0;
     busy = false;
     onEnding = null;
+    onEndingStart = null;
 
     constructor(renderer, state, input, achievements) {
         this.#renderer = renderer;
@@ -79,6 +81,7 @@ export class LaptopScreen {
 
     destroy() {
         removeEventListener('resize', this.#onResize);
+        clearTimeout(this.#ledTimer);
         this.#stopFan();
         this.#desktop?.destroy();
         this.#desktop = null;
@@ -193,6 +196,7 @@ export class LaptopScreen {
         this.#desktop.onStandBy = () => this.collapse();
         this.#desktop.onTurnOff = () => this.#shutDown();
         this.#desktop.onEnding = kind => this.onEnding?.(kind);
+        this.#desktop.onEndingStart = () => this.onEndingStart?.();
     }
 
 
@@ -212,9 +216,9 @@ export class LaptopScreen {
         await wait(BLACK_MS);
         this.#host.classList.add('laptop-screen-fading', 'laptop-screen-off');
         this.#stopFan(FAN_TAIL_MS, FAN_SPIN_DOWN_MS);
-        wait(FAN_TAIL_MS).then(() => {
+        this.#ledTimer = setTimeout(() => {
             if (!this.#state.flags.laptopOn) this.#light(0, LED_OFF_MS);
-        });
+        }, FAN_TAIL_MS);
         await wait(FADE_MS);
         await collapsing;
         shutdown.remove();

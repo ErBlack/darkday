@@ -32,6 +32,7 @@ export class Khaos {
     #root;
     #capturer = null;
 
+    onSolve = null;
     onSolved = null;
 
     constructor(state, windows, root) {
@@ -56,13 +57,14 @@ export class Khaos {
     }
 
     get processAlive() {
-        return this.active && this.#state.khaosProcess;
+        return (this.active || this.#state.khaos === 'armed') && this.#state.khaosProcess;
     }
 
     arm() {
         if (this.#state.khaos !== 'idle') return;
 
         this.#state.khaos = 'armed';
+        this.#state.khaosProcess = true;
         this.#preload();
     }
 
@@ -122,6 +124,9 @@ export class Khaos {
 
     killProcess() {
         this.#state.khaosProcess = false;
+
+        if (this.#state.khaos === 'armed') this.#state.khaos = 'defeated';
+
         this.check();
     }
 
@@ -135,6 +140,7 @@ export class Khaos {
     async solve(password) {
         if (await sha256(password) !== PASSWORD) return false;
 
+        this.onSolve?.();
         this.#state.khaos = 'solved';
         await this.#aftershock();
         this.onSolved?.(password);

@@ -66,6 +66,8 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
 
     const screen = new LaptopScreen(renderer, state, input, achievements);
 
+    renderer.setLayers([screen]);
+
     const compose = (extra = []) => {
         renderer.setLayers([screen, stage, ...extra], [stage.overlay], [inventory, status]);
     };
@@ -121,6 +123,10 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
     };
 
     let ending = false;
+
+    screen.onEndingStart = () => {
+        ending = true;
+    };
 
     screen.onEnding = kind => {
         const vault = screen.vault('ending');
