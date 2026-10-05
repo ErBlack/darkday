@@ -68,8 +68,8 @@
     z-index: 4;
     pointer-events: none;
     background: url('/assets/laptop.jpg') no-repeat;
-    background-size: calc(100% * 2912 / 1012) calc(100% * 1632 / 759);
-    background-position: calc(100% * 1000 / 1900) calc(100% * 212 / 873);
+    background-size: calc(100% * 2912 / 1003) calc(100% * 1632 / 754);
+    background-position: calc(100% * 1007 / 1909) calc(100% * 217 / 878);
     mix-blend-mode: screen;
     opacity: var(--glass, 0.55);
 }

@@ -186,7 +186,7 @@ export class Renderer {
 
         this.#draw();
 
-        if (alive) this.#frame = requestAnimationFrame(this.#tick);
+        if (alive && this.#frame === null) this.#frame = requestAnimationFrame(this.#tick);
     };
 
     #draw() {
@@ -198,7 +198,7 @@ export class Renderer {
         const scene = this.view;
         this.view = this.#base;
 
-        for (const layer of this.#overlays) layer.draw(this);
+        for (const layer of this.#overlays) layer.draw?.(this);
 
         this.view = scene;
         this.#bind(this.#scene);
@@ -217,7 +217,7 @@ export class Renderer {
 
         this.#use(this.#sprite);
 
-        for (const layer of layers) layer.draw(this);
+        for (const layer of layers) layer.draw?.(this);
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.viewport(0, 0, width, height);

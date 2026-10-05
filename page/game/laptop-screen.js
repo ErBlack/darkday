@@ -6,8 +6,10 @@ import { easeInOut } from '../engine/ease/ease-in-out.js';
 import { runBios } from './boot/bios-screen.js';
 import { playSystemSound } from '../os/audio/play-system-sound.js';
 import { muffleSystem } from '../os/audio/muffle-system.js';
+import { audioContext } from '../engine/audio/audio-context.js';
 
-const SCREEN = { x: 1000, y: 212, w: 1012, h: 759 };
+const SCREEN = { x: 1007, y: 217, w: 1003, h: 754 };
+const PANEL = [{ x: 1011, y: 217 }, { x: 2001, y: 217 }, { x: 2010, y: 971 }, { x: 1007, y: 971 }];
 const FULL = { x: 0, y: 0, w: REF.width, h: REF.height };
 const RATIO = SCREEN.h / SCREEN.w;
 const EXPAND_MS = 1100;
@@ -15,10 +17,16 @@ const FADE_MS = 500;
 const BACKLIGHT_MS = 1200;
 const BLACK_MS = 700;
 const SHUTDOWN_MS = 1800;
-const LED_OFF_MS = 500;
+const LED_OFF_MS = 100;
 const LED_BLINK = [[0.9, 160], [0.35, 220], [0.8, 180], [0.45, 300], [1, 400]];
 const GLASS = 0.55;
 const SHUTDOWN_SOUND = 'assets/sounds/shutdown.mp3';
+const FAN_SOUND = 'assets/sounds/fan.mp3';
+const FAN_VOLUME = 0.4;
+const FAN_SPIN_UP_MS = 2500;
+const FAN_TAIL_MS = 1500;
+const FAN_SPIN_DOWN_MS = 2500;
+const FAN_IDLE_RATE = 0.3;
 
 const lerp = (from, to, t) => from + (to - from) * t;
 const lerpRect = (from, to, t) => ({
@@ -40,6 +48,7 @@ export class LaptopScreen {
     #tween = null;
     #visible = false;
     #glow = null;
+    #fan = null;
 
     led = 0;
     busy = false;
@@ -56,7 +65,10 @@ export class LaptopScreen {
         this.#progress = state.flags.laptopExpanded ? 1 : 0;
         this.led = state.flags.laptopOn ? 1 : 0;
 
-        if (state.flags.laptopOn) this.#boot();
+        if (state.flags.laptopOn) {
+            this.#boot();
+            this.#startFan(false);
+        }
 
         this.#host.classList.toggle('laptop-screen-full', state.flags.laptopExpanded);
         addEventListener('resize', this.#onResize);
@@ -67,6 +79,7 @@ export class LaptopScreen {
 
     destroy() {
         removeEventListener('resize', this.#onResize);
+        this.#stopFan();
         this.#desktop?.destroy();
         this.#desktop = null;
         this.#host.remove();
@@ -92,6 +105,7 @@ export class LaptopScreen {
 
         flags.laptopOn = true;
         this.busy = true;
+        this.#startFan();
         this.#blink();
         this.#host.classList.add('laptop-screen-off');
         this.#update();
@@ -108,6 +122,37 @@ export class LaptopScreen {
         this.#boot();
         bios.remove();
         this.busy = false;
+    }
+
+    #startFan(spinUp = true) {
+        const volume = spinUp ? { volume: 0, fadeTo: FAN_VOLUME, fadeMs: FAN_SPIN_UP_MS } : { volume: FAN_VOLUME };
+
+        this.#fan = playSystemSound(FAN_SOUND, { ...volume, loop: true }).catch(() => null);
+
+        if (!spinUp) return;
+
+        this.#fan.then(sound => {
+            if (!sound) return;
+
+            const at = audioContext().currentTime;
+
+            sound.source.playbackRate.setValueAtTime(FAN_IDLE_RATE, at);
+            sound.source.playbackRate.setTargetAtTime(1, at, FAN_SPIN_UP_MS / 1000 / 3);
+        });
+    }
+
+    #stopFan(delay = 0, spinDown = 0) {
+        this.#fan?.then(sound => {
+            if (!sound) return;
+
+            const at = audioContext().currentTime + delay / 1000;
+            const duration = spinDown / 1000;
+
+            sound.source.playbackRate.setTargetAtTime(FAN_IDLE_RATE, at, duration / 3);
+            sound.gain.gain.setTargetAtTime(0, at, duration / 4);
+            sound.source.stop(at + duration);
+        });
+        this.#fan = null;
     }
 
     async #blink() {
@@ -166,7 +211,10 @@ export class LaptopScreen {
         this.#desktop = null;
         await wait(BLACK_MS);
         this.#host.classList.add('laptop-screen-fading', 'laptop-screen-off');
-        this.#light(0, LED_OFF_MS);
+        this.#stopFan(FAN_TAIL_MS, FAN_SPIN_DOWN_MS);
+        wait(FAN_TAIL_MS).then(() => {
+            if (!this.#state.flags.laptopOn) this.#light(0, LED_OFF_MS);
+        });
         await wait(FADE_MS);
         await collapsing;
         shutdown.remove();
@@ -218,22 +266,27 @@ export class LaptopScreen {
         this.#host.classList.add('laptop-screen-zooming');
 
         const promise = new Promise(resolve => {
-            this.#tween = { from: this.#progress, to, start: performance.now(), resolve };
+            this.#tween = { from: this.#progress, to, time: 0, resolve };
         });
         this.#tween.promise = promise;
-        requestAnimationFrame(this.#tick);
+        this.#renderer.invalidate();
 
         return promise;
     }
 
-    #tick = now => {
+    update(dt) {
         const tween = this.#tween;
-        const t = Math.min(1, (now - tween.start) / EXPAND_MS);
+
+        if (!tween) return false;
+
+        tween.time += dt;
+
+        const t = Math.min(1, tween.time / EXPAND_MS);
 
         this.#progress = lerp(tween.from, tween.to, easeInOut(t));
         this.#apply();
 
-        if (t < 1) return requestAnimationFrame(this.#tick);
+        if (t < 1) return true;
 
         this.#tween = null;
         this.#state.flags.laptopExpanded = tween.to === 1;
@@ -241,7 +294,9 @@ export class LaptopScreen {
         this.#host.classList.remove('laptop-screen-zooming');
         this.#input.enabled = tween.to === 0;
         tween.resolve();
-    };
+
+        return false;
+    }
 
     #target() {
         const { width, height } = this.#renderer.view;
@@ -280,6 +335,7 @@ export class LaptopScreen {
             this.#host.style.removeProperty('width');
             this.#host.style.removeProperty('height');
             this.#host.style.removeProperty('transform');
+            this.#host.style.removeProperty('clip-path');
             this.#host.style.inset = '0';
 
             return;
@@ -298,5 +354,15 @@ export class LaptopScreen {
         this.#host.style.width = `${visible.w / scale}px`;
         this.#host.style.height = `${visible.h / scale}px`;
         this.#host.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+
+        const ref = quad.w / SCREEN.w;
+        const points = PANEL.map(point => {
+            const px = (quad.x + (point.x - SCREEN.x) * ref - x) / scale;
+            const py = (quad.y + (point.y - SCREEN.y) * ref - y) / scale;
+
+            return `${px}px ${py}px`;
+        });
+
+        this.#host.style.clipPath = `polygon(${points.join(', ')})`;
     }
 }

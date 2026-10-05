@@ -67,7 +67,7 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
     const screen = new LaptopScreen(renderer, state, input, achievements);
 
     const compose = (extra = []) => {
-        renderer.setLayers([stage, ...extra], [stage.overlay], [inventory, status]);
+        renderer.setLayers([screen, stage, ...extra], [stage.overlay], [inventory, status]);
     };
 
     canvas.addEventListener('pointermove', event => {
@@ -179,6 +179,7 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
         loadSound('assets/sounds/usb-connect.mp3'),
         loadSound('assets/sounds/startup.mp3'),
         loadSound('assets/sounds/shutdown.mp3'),
+        loadSound('assets/sounds/fan.mp3'),
         loadSound('assets/sounds/logon.mp3'),
         loadSound('assets/sounds/logoff.mp3'),
         loadSound('assets/sounds/minimize.mp3'),
