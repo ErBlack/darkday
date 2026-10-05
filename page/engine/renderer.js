@@ -17,17 +17,45 @@ const sourceSize = source => ({
     height: source.videoHeight || source.naturalHeight || source.height,
 });
 
+const createSurface = (canvas, options) => {
+    const gl = canvas.getContext('webgl', { antialias: false, ...options });
+    const white = createTexture(gl);
+
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+
+    const target = createTexture(gl);
+    const framebuffer = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    gl.enable(gl.BLEND);
+    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+    return {
+        canvas,
+        gl,
+        white,
+        target,
+        framebuffer,
+        sprite: createProgram(gl, SPRITE_VERTEX, SPRITE_FRAGMENT),
+        post: createProgram(gl, POST_VERTEX, POST_FRAGMENT),
+        quad: createUnitQuad(gl),
+        textures: new WeakMap(),
+    };
+};
+
 export class Renderer {
     #canvas;
+    #scene;
+    #ui;
     #gl;
     #sprite;
-    #post;
     #quad;
     #white;
-    #framebuffer;
-    #sceneTexture;
-    #textures = new WeakMap();
+    #textures;
     #layers = [];
+    #floating = [];
     #overlays = [];
     #frame = null;
     #last = 0;
@@ -39,26 +67,11 @@ export class Renderer {
     view = { dpr: 1, scale: 1, x: 0, y: 0, width: 0, height: 0 };
     camera = FULL;
 
-    constructor(canvas) {
+    constructor(canvas, uiCanvas) {
         this.#canvas = canvas;
-
-        const gl = canvas.getContext('webgl', { alpha: false, antialias: false, premultipliedAlpha: false });
-        this.#gl = gl;
-        this.#sprite = createProgram(gl, SPRITE_VERTEX, SPRITE_FRAGMENT);
-        this.#post = createProgram(gl, POST_VERTEX, POST_FRAGMENT);
-        this.#quad = createUnitQuad(gl);
-
-        this.#white = createTexture(gl);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
-
-        this.#sceneTexture = createTexture(gl);
-        this.#framebuffer = gl.createFramebuffer();
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.#framebuffer);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.#sceneTexture, 0);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        this.#scene = createSurface(canvas, { alpha: false, premultipliedAlpha: false });
+        this.#ui = createSurface(uiCanvas, { alpha: true, premultipliedAlpha: true });
+        this.#bind(this.#scene);
 
         addEventListener('resize', this.#onResize);
         this.resize();
@@ -66,14 +79,24 @@ export class Renderer {
 
     #onResize = () => this.resize();
 
+    #bind(surface) {
+        this.#gl = surface.gl;
+        this.#sprite = surface.sprite;
+        this.#quad = surface.quad;
+        this.#white = surface.white;
+        this.#textures = surface.textures;
+    }
+
     destroy() {
         removeEventListener('resize', this.#onResize);
         clearInterval(this.#grainTimer);
         cancelAnimationFrame(this.#frame);
         this.#frame = null;
         this.#layers = [];
+        this.#floating = [];
         this.#overlays = [];
-        this.#gl.getExtension('WEBGL_lose_context')?.loseContext();
+
+        for (const { gl } of [this.#scene, this.#ui]) gl.getExtension('WEBGL_lose_context')?.loseContext();
     }
 
     get canvas() {
@@ -81,18 +104,18 @@ export class Renderer {
     }
 
     resize() {
-        const gl = this.#gl;
         const dpr = Math.min(devicePixelRatio || 1, MAX_DPR);
         const width = innerWidth;
         const height = innerHeight;
 
-        this.#canvas.width = Math.round(width * dpr);
-        this.#canvas.height = Math.round(height * dpr);
-        this.#canvas.style.width = `${width}px`;
-        this.#canvas.style.height = `${height}px`;
-
-        gl.bindTexture(gl.TEXTURE_2D, this.#sceneTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.#canvas.width, this.#canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        for (const { canvas, gl, target } of [this.#scene, this.#ui]) {
+            canvas.width = Math.round(width * dpr);
+            canvas.height = Math.round(height * dpr);
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            gl.bindTexture(gl.TEXTURE_2D, target);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, canvas.width, canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        }
 
         this.view = { ...this.view, dpr, width, height };
         this.#base = this.#fit(FULL);
@@ -130,8 +153,9 @@ export class Renderer {
         return { x: rect.x * scale + x, y: rect.y * scale + y, w: rect.w * scale, h: rect.h * scale };
     }
 
-    setLayers(layers, overlays = []) {
+    setLayers(layers, floating = [], overlays = []) {
         this.#layers = layers;
+        this.#floating = floating;
         this.#overlays = overlays;
         this.invalidate();
     }
@@ -156,7 +180,7 @@ export class Renderer {
 
         let alive = false;
 
-        for (const layer of [...this.#layers, ...this.#overlays]) {
+        for (const layer of [...this.#layers, ...this.#floating, ...this.#overlays]) {
             if (layer.update?.(dt)) alive = true;
         }
 
@@ -166,35 +190,9 @@ export class Renderer {
     };
 
     #draw() {
-        const gl = this.#gl;
-        const { width, height } = this.#canvas;
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.#framebuffer);
-        gl.viewport(0, 0, width, height);
-        gl.clearColor(0, 0, 0, 1);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        this.#use(this.#sprite);
-
-        for (const layer of this.#layers) layer.draw(this);
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, width, height);
-
-        const { uniforms } = this.#post;
-        this.#use(this.#post);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, this.#sceneTexture);
-        gl.uniform1i(uniforms.u_scene, 0);
-        gl.uniform2f(uniforms.u_resolution, width, height);
         this.#seed = (this.#seed + 1) % 1024;
-        gl.uniform1f(uniforms.u_cell, Math.max(1, Math.round(this.view.dpr)));
-        gl.uniform2f(uniforms.u_seed, (this.#seed * 37) % 256, (this.#seed * 91) % 256);
-        gl.uniform1f(uniforms.u_blur, POST.blur * this.view.dpr);
-        gl.uniform1f(uniforms.u_grain, POST.grain);
-        gl.uniform2f(uniforms.u_vignette, POST.vignetteStart, POST.vignetteStrength);
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
+        this.#pass(this.#scene, this.#layers, [0, 0, 0, 1]);
+        this.#pass(this.#ui, this.#floating, [0, 0, 0, 0]);
         this.#use(this.#sprite);
 
         const scene = this.view;
@@ -203,6 +201,41 @@ export class Renderer {
         for (const layer of this.#overlays) layer.draw(this);
 
         this.view = scene;
+        this.#bind(this.#scene);
+    }
+
+    #pass(surface, layers, clear) {
+        this.#bind(surface);
+
+        const gl = this.#gl;
+        const { width, height } = surface.canvas;
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, surface.framebuffer);
+        gl.viewport(0, 0, width, height);
+        gl.clearColor(...clear);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        this.#use(this.#sprite);
+
+        for (const layer of layers) layer.draw(this);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.viewport(0, 0, width, height);
+        gl.disable(gl.BLEND);
+
+        const { uniforms } = surface.post;
+        this.#use(surface.post);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, surface.target);
+        gl.uniform1i(uniforms.u_scene, 0);
+        gl.uniform2f(uniforms.u_resolution, width, height);
+        gl.uniform1f(uniforms.u_cell, Math.max(1, Math.round(this.view.dpr)));
+        gl.uniform2f(uniforms.u_seed, (this.#seed * 37) % 256, (this.#seed * 91) % 256);
+        gl.uniform1f(uniforms.u_blur, POST.blur * this.view.dpr);
+        gl.uniform1f(uniforms.u_grain, POST.grain);
+        gl.uniform2f(uniforms.u_vignette, POST.vignetteStart, POST.vignetteStrength);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.enable(gl.BLEND);
     }
 
     #use({ program, unit }) {

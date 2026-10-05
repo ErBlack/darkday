@@ -43,7 +43,11 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
     canvas.id = 'game';
     document.body.prepend(canvas);
 
-    const renderer = new Renderer(canvas);
+    const ui = document.createElement('canvas');
+    ui.id = 'game-ui';
+    canvas.after(ui);
+
+    const renderer = new Renderer(canvas, ui);
     const status = new Status(renderer);
     const achievements = new Achievements();
 
@@ -63,7 +67,7 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
     const screen = new LaptopScreen(renderer, state, input, achievements);
 
     const compose = (extra = []) => {
-        renderer.setLayers([stage, ...extra], [inventory, status]);
+        renderer.setLayers([stage, ...extra], [stage.overlay], [inventory, status]);
     };
 
     canvas.addEventListener('pointermove', event => {
@@ -205,6 +209,7 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
             renderer.destroy();
             screen.destroy();
             canvas.remove();
+            ui.remove();
         },
     };
 };

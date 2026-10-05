@@ -26,19 +26,23 @@ vec3 overlay(vec3 base, float gray) {
 
 void main() {
     vec2 texel = 1.0 / u_resolution;
-    vec3 color = vec3(0.0);
+    vec4 sum = vec4(0.0);
     float total = 0.0;
 
     for (int i = -1; i <= 1; i++) {
         for (int j = -1; j <= 1; j++) {
             vec2 offset = vec2(float(i), float(j)) * u_blur * texel;
             float weight = exp(-float(i * i + j * j) * 0.5);
-            color += texture2D(u_scene, v_uv + offset).rgb * weight;
+            sum += texture2D(u_scene, v_uv + offset) * weight;
             total += weight;
         }
     }
 
-    color /= total;
+    sum /= total;
+
+    if (sum.a <= 0.0) discard;
+
+    vec3 color = sum.rgb / sum.a;
 
     float t = length((v_uv - 0.5) * 2.0) / 1.41421356;
     float shade = clamp((t - u_vignette.x) / (1.0 - u_vignette.x), 0.0, 1.0) * u_vignette.y;
@@ -48,5 +52,5 @@ void main() {
     float gray = 0.5 + (hash(cell) - 0.5) * 0.55;
     color = mix(color, overlay(color, gray), u_grain);
 
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(color * sum.a, sum.a);
 }

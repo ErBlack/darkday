@@ -1,4 +1,7 @@
+import { REF } from '../engine/ref.js';
+
 const OPEN_RECT = { x: 956, y: 298, w: 1000, h: 1037 };
+const SCREEN_RECT = { x: 0, y: 0, w: REF.width, h: REF.height };
 
 const enabled = entry => entry.when?.() !== false;
 
@@ -13,6 +16,13 @@ export class Stage {
         this.#state = state;
         this.#inventory = inventory;
         this.#items = items;
+
+        const open = this.openItem;
+
+        if (open) {
+            open.place = 'open';
+            open.rect = OPEN_RECT;
+        }
     }
 
     get openItem() {
@@ -44,6 +54,11 @@ export class Stage {
     }
 
     hotspots() {
+        const open = this.openItem;
+
+        if (open) return open.place === 'open' ? [{ rect: SCREEN_RECT, action: () => this.takeOpen() }] : [];
+        if (Object.values(this.#items).some(item => item.openable && item.sprite.busy)) return [];
+
         const scene = this.scene;
         const inventory = this.#inventory;
         const held = inventory.held;
@@ -69,10 +84,6 @@ export class Stage {
 
             hotspots.push({ rect: entry.rect ?? entry.item.rect, quiet: entry.quiet, action: entry.click ?? (() => inventory.pickUp(entry.item)) });
         }
-
-        const open = this.openItem;
-
-        if (open) hotspots.push({ rect: open.rect, action: () => this.takeOpen() });
 
         for (const target of scene.targets) {
             if (!enabled(target)) continue;
@@ -100,8 +111,6 @@ export class Stage {
 
         if (!scene) return;
 
-        const open = this.openItem;
-
         renderer.drawCover(scene.background);
 
         for (const patch of scene.patches) {
@@ -115,12 +124,18 @@ export class Stage {
         for (const region of scene.foreground) {
             if (enabled(region)) renderer.drawRegion(scene.background, region.rect);
         }
-
-        for (const item of Object.values(this.#items)) {
-            if (item.place === 'flying' && item !== open) item.sprite.draw(renderer);
-            if (item.place === 'incoming') item.sprite.draw(renderer, { alpha: 1 - item.sprite.progress });
-        }
-
-        open?.sprite.draw(renderer);
     }
+
+    overlay = {
+        draw: renderer => {
+            const open = this.openItem;
+
+            for (const item of Object.values(this.#items)) {
+                if (item.place === 'flying' && item !== open) item.sprite.draw(renderer);
+                if (item.place === 'incoming') item.sprite.draw(renderer, { alpha: 1 - item.sprite.progress });
+            }
+
+            open?.sprite.draw(renderer);
+        },
+    };
 }

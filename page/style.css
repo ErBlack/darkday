@@ -163,6 +163,17 @@ body.game {
     touch-action: none;
 }
 
+#game-ui {
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+
+    body:has(.laptop-screen-full, .laptop-screen-zooming) & {
+        opacity: 0;
+    }
+}
+
 body.egg {
     #vignette,
     #grain {
