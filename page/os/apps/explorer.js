@@ -133,7 +133,9 @@ export const explorer = {
 
                 item.addEventListener('click', () => {
                     selected = node;
-                    render();
+
+                    for (const other of view.children) other.classList.toggle('explorer-selected', other === item);
+
                     if (node.device && shell.floppy.playing) shell.floppy.toggle();
                 });
                 item.addEventListener('dblclick', () => node.trashed || open(node));
