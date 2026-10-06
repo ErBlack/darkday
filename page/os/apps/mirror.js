@@ -52,6 +52,7 @@ export const mirror = {
         const status = element('div', 'os-status', content);
 
         let stream = null;
+        let attempt = 0;
 
         const snapshot = () => {
             if (!stream || !video.videoWidth) return;
@@ -73,6 +74,8 @@ export const mirror = {
         };
 
         const request = async () => {
+            const current = (attempt += 1);
+
             stop();
             view.classList.remove('mirror-view-broken');
             status.textContent = 'Status: Starting...';
@@ -80,14 +83,14 @@ export const mirror = {
             try {
                 const media = await requestCamera();
 
-                if (win.closed) return media.getTracks().forEach(track => track.stop());
+                if (win.closed || current !== attempt) return media.getTracks().forEach(track => track.stop());
 
                 stream = media;
                 video.srcObject = media;
                 status.textContent = 'Status: Working';
                 checkExposed(achievements, { camera: true, location: Boolean(personal.location) });
             } catch (error) {
-                await fail(error);
+                if (current === attempt) await fail(error);
             }
         };
 

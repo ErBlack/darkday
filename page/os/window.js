@@ -27,6 +27,7 @@ export class OsWindow {
     modal = null;
     closed = false;
     locked = false;
+    memory = null;
     onClose = null;
     onFocus = null;
     onBlur = null;

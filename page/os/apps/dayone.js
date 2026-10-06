@@ -58,10 +58,10 @@ export const dayOne = {
     single: true,
     size: { w: 820, h: 540 },
     usage: { memory: [5000, 8000], cpu: [0, 2] },
-    mount(content, win, { openLink, vaults, user, flags, achievements }) {
+    mount(content, win, { openLink, vaults, user, state, achievements }) {
         content.classList.add('os-pane', 'dayone');
 
-        const watch = watchEntry(win, kind => spy(kind, { flags, achievements }));
+        const watch = watchEntry(win, kind => spy(kind, { state, achievements }));
 
         const vault = vaults[user?.vault];
         const url = name => vault.url(name);

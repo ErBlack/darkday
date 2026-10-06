@@ -39,7 +39,7 @@ export class Inventory {
     }
 
     get held() {
-        return this.#state.held ? this.#items[this.#state.held] : null;
+        return this.#list.find(item => item.place === 'held') ?? null;
     }
 
     get #list() {
@@ -86,7 +86,6 @@ export class Inventory {
     }
 
     pick(item) {
-        this.#state.held = item.id;
         item.place = 'held';
         this.#renderer.invalidate();
     }
@@ -97,15 +96,11 @@ export class Inventory {
         if (!held) return;
 
         held.place = 'inventory';
-        this.#state.held = null;
         this.#renderer.invalidate();
     }
 
     remove(item) {
         this.#state.inventory = this.#state.inventory.filter(id => id !== item.id);
-
-        if (this.#state.held === item.id) this.#state.held = null;
-
         item.place = 'gone';
         this.#renderer.invalidate();
     }

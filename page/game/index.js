@@ -103,6 +103,9 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
             await layer.promise;
             compose();
             input.enabled = true;
+        } catch {
+            screen.show(state.scene === 'laptop');
+            input.enabled = true;
         } finally {
             transitioning -= 1;
         }
@@ -123,6 +126,7 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
     };
 
     let ending = false;
+    let playing = false;
 
     screen.onEndingStart = () => {
         ending = true;
@@ -131,7 +135,9 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
     screen.onEnding = kind => {
         const vault = screen.vault('ending');
 
-        if (!vault) return;
+        if (!vault || playing) return;
+
+        playing = true;
 
         const script = vault.data.ending;
         const variant = script.variants[kind];

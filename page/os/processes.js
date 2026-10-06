@@ -15,6 +15,7 @@ export class Processes {
     #windows;
     #state;
     #khaos;
+    #usage = new Map();
 
     constructor(windows, state, khaos) {
         this.#windows = windows;
@@ -25,9 +26,9 @@ export class Processes {
     #usageOf(app) {
         const ranges = app.usage ?? DEFAULT_USAGE;
 
-        this.#state.usage[app.id] ??= { memory: between(ranges.memory), cpu: between(ranges.cpu) };
+        if (!this.#usage.has(app.id)) this.#usage.set(app.id, { memory: between(ranges.memory), cpu: between(ranges.cpu) });
 
-        return this.#state.usage[app.id];
+        return this.#usage.get(app.id);
     }
 
     get apps() {
@@ -42,8 +43,8 @@ export class Processes {
         const apps = this.apps;
         const running = apps.map(app => app.id);
 
-        for (const id of Object.keys(this.#state.usage)) {
-            if (!running.includes(id)) delete this.#state.usage[id];
+        for (const id of this.#usage.keys()) {
+            if (!running.includes(id)) this.#usage.delete(id);
         }
 
         return apps.map(app => {

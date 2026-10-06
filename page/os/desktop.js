@@ -30,6 +30,7 @@ import { isDeadEnd } from './dead-end/is-dead-end.js';
 import { playDeadEnd } from './dead-end/play-dead-end.js';
 import { DEAD_END_PATHS } from './dead-end/dead-end-paths.js';
 import { cancelSpies } from './spy/spy.js';
+import { persistentKeys } from './vault/persistent-keys.js';
 
 const APPS = [run, explorer, mirror, maps, browser, dayOne, crypTool, taskManager];
 const RECYCLE_BIN = 'Recycle Bin';
@@ -88,7 +89,11 @@ export class Desktop {
 
         this.shell = {
             state,
-            flags: game.flags,
+            flags: {
+                get flashInserted() {
+                    return game.items.flash === 'laptop';
+                },
+            },
             fileSystem,
             processes: null,
             khaos: null,
@@ -211,10 +216,11 @@ export class Desktop {
         this.startMenu.destroy();
         this.startMenu = null;
         this.state.user = null;
+        this.state.keys = persistentKeys(this.state.keys);
 
-        this.state.keys = {};
-
-        for (const name of Object.keys(this.shell.vaults)) delete this.shell.vaults[name];
+        for (const name of Object.keys(this.shell.vaults)) {
+            if (!this.state.keys[name]) delete this.shell.vaults[name];
+        }
 
         this.#area.style.backgroundImage = '';
         this.state.hung = [];
@@ -226,6 +232,8 @@ export class Desktop {
             const app = APPS.find(app => app.id === record.app);
 
             if (!app) continue;
+
+            app.restore?.(record.memory);
 
             const window = this.windows.open(app);
 

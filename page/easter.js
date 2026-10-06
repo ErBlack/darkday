@@ -87,7 +87,7 @@ const init = async () => {
     }
 
     new GameMenu({
-        available: () => inGame() && !game.screen.expanded && !game.screen.zooming && !document.querySelector('.ending, .dead-end'),
+        available: () => inGame() && !game.busy() && !game.screen.expanded && !game.screen.zooming && !document.querySelector('.ending, .dead-end'),
         unlocked: () => game.achievements.unlocked,
         canLoad: () => loadState() !== null,
         onSave: () => saveState(game.state),

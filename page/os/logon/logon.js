@@ -82,11 +82,18 @@ export class Logon {
         icon('assets/os/icons/question.png', '', help);
         const message = element('div', 'logon-message', body);
 
+        let submitting = false;
+
         const submit = async () => {
+            if (submitting) return;
+
+            submitting = true;
+
             const vault = await openVault(user.vault, input.value);
 
             if (vault) return this.#enter(user, vault, input.value);
 
+            submitting = false;
             input.value = '';
             message.textContent = FORGOT;
             input.focus();

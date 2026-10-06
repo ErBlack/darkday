@@ -2,17 +2,9 @@ export const createState = () => ({
     scene: 'corridor',
     flags: {
         keyState: 'hidden',
-        doorUnlocked: false,
         cabinetOpen: false,
-        laptopPlaced: false,
-        crowbarOut: false,
-        floorOpen: false,
-        flashTaken: false,
-        flashInserted: false,
         laptopOn: false,
         laptopExpanded: false,
-        spiedCamera: false,
-        spiedLocation: false,
     },
     items: {
         key: 'corridor',
@@ -22,8 +14,6 @@ export const createState = () => ({
         flash: 'room',
     },
     inventory: [],
-    held: null,
-    open: null,
     os: {
         windows: [],
         hung: [],
@@ -34,9 +24,8 @@ export const createState = () => ({
         user: null,
         keys: {},
         started: false,
-        usage: {},
+        spied: { camera: false, location: false },
         apps: {},
         deleted: [],
-        trash: [],
     },
 });

@@ -24,6 +24,12 @@ const FLASH_LIFTED = { x: 1710, y: 1245, w: 64, h: 22, rotation: 0.2, squash: 1 
 
 export const room = ({ state, items: { laptop, crowbar, flash }, inventory, go }) => {
     const { flags } = state;
+    let lifting = false;
+
+    const laptopPlaced = () => laptop.place === 'gone';
+    const crowbarOut = () => crowbar.place !== 'room';
+    const flashTaken = () => flash.place !== 'room';
+    const floorOpen = () => crowbar.place === 'gone' && (!flashTaken() || lifting);
 
     if (laptop.place === 'room') {
         laptop.rect = LAPTOP_ON_SHELF;
@@ -65,13 +71,11 @@ export const room = ({ state, items: { laptop, crowbar, flash }, inventory, go }
 
     const takeCrowbar = async () => {
         await crowbar.animate({ x: CROWBAR_IN_BATH.x + CROWBAR_SLIDE }, { duration: 450, place: 'room' });
-        flags.crowbarOut = true;
         await inventory.pickUp(crowbar);
     };
 
     const placeLaptop = item => {
         inventory.remove(item);
-        flags.laptopPlaced = true;
     };
 
     const openLaptop = () => {
@@ -82,7 +86,6 @@ export const room = ({ state, items: { laptop, crowbar, flash }, inventory, go }
 
     const openFloor = item => {
         inventory.remove(item);
-        flags.floorOpen = true;
         playSound(FLOOR_SOUND, { volume: 0.6 }).catch(() => {});
     };
 
@@ -90,16 +93,11 @@ export const room = ({ state, items: { laptop, crowbar, flash }, inventory, go }
         playSound('assets/sounds/floor-creak.mp3', { volume: 0.6 }).catch(() => {});
     };
 
-    const closeFloor = () => {
-        flags.floorOpen = false;
-        playSound(FLOOR_SOUND, { volume: 0.6 }).catch(() => {});
-    };
-
     const takeFlash = async () => {
-        flags.flashTaken = true;
-
+        lifting = true;
         await flash.animate(FLASH_HALFWAY, { duration: 175, ease: easeOut });
-        closeFloor();
+        lifting = false;
+        playSound(FLOOR_SOUND, { volume: 0.6 }).catch(() => {});
         await flash.animate(FLASH_LIFTED, { duration: 175, ease: easeOut });
 
         await inventory.pickUp(flash);
@@ -109,20 +107,20 @@ export const room = ({ state, items: { laptop, crowbar, flash }, inventory, go }
         background: 'assets/room.jpg',
         patches: [
             { src: 'assets/patches/cabinet-open.png', rect: CABINET_OPEN, when: () => flags.cabinetOpen },
-            { src: 'assets/patches/laptop-table.png', rect: LAPTOP_ON_TABLE, when: () => flags.laptopPlaced },
-            { src: 'assets/patches/floor-open.png', rect: FLOOR_OPEN, when: () => flags.floorOpen },
+            { src: 'assets/patches/laptop-table.png', rect: LAPTOP_ON_TABLE, when: laptopPlaced },
+            { src: 'assets/patches/floor-open.png', rect: FLOOR_OPEN, when: floorOpen },
         ],
-        foreground: [{ rect: BATH_WALL, when: () => !flags.crowbarOut }],
+        foreground: [{ rect: BATH_WALL, when: () => !crowbarOut() }],
         items: [
             { item: laptop, when: () => flags.cabinetOpen, quiet: true, click: takeLaptop },
-            { item: crowbar, rect: CROWBAR_VISIBLE, when: () => !flags.crowbarOut, click: takeCrowbar },
+            { item: crowbar, rect: CROWBAR_VISIBLE, when: () => !crowbarOut(), click: takeCrowbar },
         ],
         targets: [
             { rect: CABINET, when: () => !flags.cabinetOpen, click: openCabinet },
-            { rect: TABLE, when: () => !flags.laptopPlaced, use: { laptop: placeLaptop } },
-            { rect: FLOOR_BOARD, when: () => !flags.floorOpen, quiet: true, use: { crowbar: openFloor }, blocked: creakFloor },
-            { rect: FLOOR_BOARD, when: () => flags.floorOpen && !flags.flashTaken, click: takeFlash },
-            { rect: LAPTOP_SCREEN, when: () => flags.laptopPlaced, click: openLaptop },
+            { rect: TABLE, when: () => !laptopPlaced(), use: { laptop: placeLaptop } },
+            { rect: FLOOR_BOARD, when: () => !floorOpen(), quiet: true, use: { crowbar: openFloor }, blocked: creakFloor },
+            { rect: FLOOR_BOARD, when: () => floorOpen() && !flashTaken(), click: takeFlash },
+            { rect: LAPTOP_SCREEN, when: laptopPlaced, click: openLaptop },
         ],
     };
 };

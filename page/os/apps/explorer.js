@@ -8,6 +8,7 @@ import { password } from '../dialogs/password.js';
 import { cannotOpen } from '../data/cannot-open.js';
 import { openVault } from '../vault/open-vault.js';
 import { pathOf } from '../data/path-of.js';
+import { findNode } from '../data/find-node.js';
 import { confirm } from '../dialogs/confirm.js';
 import { emptyTrash } from '../data/empty-trash.js';
 import { trashIcon } from '../data/trash-icon.js';
@@ -24,8 +25,11 @@ const isFolder = node => Boolean(node.children || node.path || node.device) || n
 let pending = null;
 
 export const explorer = {
-    open(name) {
-        pending = name;
+    open(path) {
+        pending = path;
+    },
+    restore(memory) {
+        pending = memory?.path ?? null;
     },
     id: 'explorer',
     title: 'My Computer',
@@ -46,8 +50,14 @@ export const explorer = {
 
         const view = element('div', 'os-panel explorer-items', content);
 
-        const start = pending && fileSystem.children.find(node => node.name === pending);
-        let trail = start ? [fileSystem, start] : [fileSystem];
+        const trailOf = target => {
+            const top = fileSystem.children.find(node => node.path === target);
+            const found = top ? [fileSystem, top] : findNode(fileSystem, target, shell.flags);
+
+            return found?.every(node => !node.vault || shell.vaults[node.vault]) ? found : null;
+        };
+
+        let trail = (pending && trailOf(pending)) || [fileSystem];
 
         pending = null;
         let history = [];
@@ -119,6 +129,7 @@ export const explorer = {
         const render = () => {
             const current = trail.at(-1);
 
+            window.memory = { path: pathOf(trail) };
             window.setTitle(current.name);
             path.value = pathOf(trail);
             back.disabled = history.length === 0;

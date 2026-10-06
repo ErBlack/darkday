@@ -203,6 +203,7 @@ export class WindowManager {
             rect: { ...window.user },
             maximized: window.maximized,
             minimized: window.minimized,
+            memory: window.memory,
         }));
     }
 }

@@ -11,11 +11,18 @@ export const renderKhaosPage = (parent, onSubmit) => {
     submit.type = 'submit';
     submit.textContent = 'Submit';
 
+    let submitting = false;
+
     form.addEventListener('submit', async event => {
         event.preventDefault();
 
+        if (submitting) return;
+
+        submitting = true;
+
         if (await onSubmit(input.value)) return;
 
+        submitting = false;
         input.value = '';
         input.focus();
     });

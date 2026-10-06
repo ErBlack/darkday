@@ -138,10 +138,11 @@ export class Khaos {
     }
 
     async solve(password) {
-        if (await sha256(password) !== PASSWORD) return false;
+        if (await sha256(password) !== PASSWORD || !this.active) return false;
 
         this.onSolve?.();
         this.#state.khaos = 'solved';
+        this.#state.khaosProcess = false;
         await this.#aftershock();
         this.onSolved?.(password);
 

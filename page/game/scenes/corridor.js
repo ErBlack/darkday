@@ -12,6 +12,7 @@ const KEY_REST = { rotation: 0, squash: 0.45 };
 
 export const corridor = ({ state, items: { key, note }, inventory, status, open, go }) => {
     const { flags } = state;
+    const unlocked = () => key.place === 'gone';
 
     if (note.place === 'corridor') note.rect = NOTE_ON_DOOR;
 
@@ -65,7 +66,6 @@ export const corridor = ({ state, items: { key, note }, inventory, status, open,
 
     const unlockDoor = item => {
         inventory.remove(item);
-        flags.doorUnlocked = true;
         playSound('assets/sounds/door-unlock.mp3', { volume: 0.6 }).catch(() => {});
         status.show('Unlocked');
     };
@@ -77,9 +77,9 @@ export const corridor = ({ state, items: { key, note }, inventory, status, open,
             { item: note, click: readNote },
         ],
         targets: [
-            { rect: LOCK, when: () => !flags.doorUnlocked, use: { key: unlockDoor } },
-            { rect: DOOR, when: () => !flags.doorUnlocked, blocked: lockedDoor },
-            { rect: DOOR, when: () => flags.doorUnlocked, click: openDoor },
+            { rect: LOCK, when: () => !unlocked(), use: { key: unlockDoor } },
+            { rect: DOOR, when: () => !unlocked(), blocked: lockedDoor },
+            { rect: DOOR, when: unlocked, click: openDoor },
         ],
     };
 };

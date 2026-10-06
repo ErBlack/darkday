@@ -22,6 +22,7 @@ const LED = { x: 2022, y: 1429, w: 56, h: 56 };
 
 export const laptop = ({ state, items: { flash }, inventory, screen, go }) => {
     const { flags } = state;
+    const inserted = () => flash.place === 'laptop';
     const leave = () => go('to-room', 'room');
 
     if (flash.place === 'laptop') {
@@ -34,7 +35,6 @@ export const laptop = ({ state, items: { flash }, inventory, screen, go }) => {
         item.rect = inventory.heldRect(item);
         inventory.remove(item);
         item.place = 'laptop';
-        flags.flashInserted = true;
 
         await item.flyTo(FLASH_OUTSIDE, { tint: FLASH_TINT, duration: FLY_MS });
 
@@ -49,9 +49,9 @@ export const laptop = ({ state, items: { flash }, inventory, screen, go }) => {
     return {
         background: 'assets/laptop.jpg',
         patches: [{ src: 'assets/patches/led.png', rect: LED, when: () => screen.led > 0, alpha: () => screen.led }],
-        items: [{ item: flash, fixed: true, when: () => flags.flashInserted }],
+        items: [{ item: flash, fixed: true, when: inserted }],
         targets: [
-            { rect: BODY, when: () => !flags.flashInserted, use: { flash: insertFlash } },
+            { rect: BODY, when: () => !inserted(), use: { flash: insertFlash } },
             { rect: POWER_KEY, when: () => !flags.laptopOn, click: () => screen.powerOn() },
             { rect: SCREEN, when: () => flags.laptopOn && !screen.busy, click: () => screen.expand() },
             { rect: WALL_LEFT, click: leave },

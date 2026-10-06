@@ -17,16 +17,11 @@ export class Stage {
         this.#inventory = inventory;
         this.#items = items;
 
-        const open = this.openItem;
-
-        if (open) {
-            open.place = 'open';
-            open.rect = OPEN_RECT;
-        }
+        if (this.openItem) this.openItem.rect = OPEN_RECT;
     }
 
     get openItem() {
-        return this.#state.open ? this.#items[this.#state.open] : null;
+        return Object.values(this.#items).find(item => item.place === 'open') ?? null;
     }
 
     async open(item) {
@@ -37,16 +32,12 @@ export class Stage {
             this.#inventory.found(item);
         }
 
-        this.#state.open = item.id;
         await item.flyTo(OPEN_RECT);
         item.place = 'open';
     }
 
     takeOpen() {
-        const item = this.openItem;
-        this.#state.open = null;
-
-        return this.#inventory.take(item);
+        return this.#inventory.take(this.openItem);
     }
 
     miss(item) {
@@ -54,10 +45,8 @@ export class Stage {
     }
 
     hotspots() {
-        const open = this.openItem;
-
-        if (open) return open.place === 'open' ? [{ rect: SCREEN_RECT, action: () => this.takeOpen() }] : [];
         if (Object.values(this.#items).some(item => item.openable && item.sprite.busy)) return [];
+        if (this.openItem) return [{ rect: SCREEN_RECT, action: () => this.takeOpen() }];
 
         const scene = this.scene;
         const inventory = this.#inventory;
@@ -128,14 +117,12 @@ export class Stage {
 
     overlay = {
         draw: renderer => {
-            const open = this.openItem;
-
             for (const item of Object.values(this.#items)) {
-                if (item.place === 'flying' && item !== open) item.sprite.draw(renderer);
+                if (item.place === 'flying') item.sprite.draw(renderer);
                 if (item.place === 'incoming') item.sprite.draw(renderer, { alpha: 1 - item.sprite.progress });
             }
 
-            open?.sprite.draw(renderer);
+            this.openItem?.sprite.draw(renderer);
         },
     };
 }

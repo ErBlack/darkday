@@ -12,14 +12,20 @@ export class StartMenu {
         this.root = element('div', 'os-start-menu os-start-menu-closed', parent);
         this.#list(items, this.root);
 
-        button.addEventListener('click', () => this.toggle());
-        document.addEventListener('pointerdown', event => {
-            if (!this.root.contains(event.target) && !button.contains(event.target)) this.close();
-        }, true);
-        document.addEventListener('keydown', event => {
-            if (event.key === 'Escape') this.close();
-        });
+        button.addEventListener('click', this.#onToggle);
+        document.addEventListener('pointerdown', this.#onPointerDown, true);
+        document.addEventListener('keydown', this.#onKey);
     }
+
+    #onToggle = () => this.toggle();
+
+    #onPointerDown = event => {
+        if (!this.root.contains(event.target) && !this.#button.contains(event.target)) this.close();
+    };
+
+    #onKey = event => {
+        if (event.key === 'Escape') this.close();
+    };
 
     #list(items, parent) {
         const list = element('div', 'os-start-menu-items', parent);
@@ -79,6 +85,9 @@ export class StartMenu {
 
     destroy() {
         this.close();
+        this.#button.removeEventListener('click', this.#onToggle);
+        document.removeEventListener('pointerdown', this.#onPointerDown, true);
+        document.removeEventListener('keydown', this.#onKey);
         this.root.remove();
     }
 }

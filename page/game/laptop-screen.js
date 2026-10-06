@@ -7,6 +7,7 @@ import { runBios } from './boot/bios-screen.js';
 import { playSystemSound } from '../os/audio/play-system-sound.js';
 import { muffleSystem } from '../os/audio/muffle-system.js';
 import { audioContext } from '../engine/audio/audio-context.js';
+import { persistentKeys } from '../os/vault/persistent-keys.js';
 
 const SCREEN = { x: 1007, y: 217, w: 1003, h: 754 };
 const PANEL = [{ x: 1011, y: 217 }, { x: 2001, y: 217 }, { x: 2010, y: 971 }, { x: 1007, y: 971 }];
@@ -50,6 +51,7 @@ export class LaptopScreen {
     #glow = null;
     #fan = null;
     #ledTimer = null;
+    #destroyed = false;
 
     led = 0;
     busy = false;
@@ -80,6 +82,7 @@ export class LaptopScreen {
     #onResize = () => this.#apply();
 
     destroy() {
+        this.#destroyed = true;
         removeEventListener('resize', this.#onResize);
         clearTimeout(this.#ledTimer);
         this.#stopFan();
@@ -118,10 +121,13 @@ export class LaptopScreen {
         await wait(BACKLIGHT_MS);
         this.#host.classList.remove('laptop-screen-fading');
 
-        const bios = await runBios(this.#host, flags);
+        const bios = await runBios(this.#host, { flashInserted: this.#state.items.flash === 'laptop' });
 
         bios.replaceChildren();
         await wait(BLACK_MS);
+
+        if (this.#destroyed) return;
+
         this.#boot();
         bios.remove();
         this.busy = false;
@@ -201,6 +207,8 @@ export class LaptopScreen {
 
 
     async #shutDown() {
+        if (this.busy) return;
+
         this.busy = true;
         playSystemSound(SHUTDOWN_SOUND, { volume: 0.6 }).catch(() => {});
 
@@ -210,6 +218,9 @@ export class LaptopScreen {
         const collapsing = this.#state.flags.laptopExpanded ? this.collapse() : Promise.resolve();
 
         await wait(SHUTDOWN_MS);
+
+        if (this.#destroyed) return;
+
         shutdown.classList.add('laptop-shutdown-black');
         this.#desktop.destroy();
         this.#desktop = null;
@@ -227,12 +238,9 @@ export class LaptopScreen {
         this.#state.os.windows = [];
         this.#state.os.hung = [];
         this.#state.os.user = null;
-        this.#state.os.keys = {};
+        this.#state.os.keys = persistentKeys(this.#state.os.keys);
         this.#state.os.started = false;
-        this.#state.os.usage = {};
         delete this.#state.os.apps.browser;
-
-        if (this.#state.os.apps.civis) this.#state.os.apps.civis.session = false;
         this.#update();
         this.busy = false;
         this.#input.enabled = true;

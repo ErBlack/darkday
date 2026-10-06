@@ -74,7 +74,8 @@ export const browser = {
         let hung = false;
 
         const memory = shell.appState('browser', { tabs: [], active: 0 });
-        const civis = shell.appState('civis', { session: false, uploaded: false });
+        const civis = shell.appState('civis', { uploaded: false });
+        let login = Promise.resolve();
 
         const remember = () => {
             memory.tabs = tabs.map(tab => ({ urls: [...tab.urls], index: tab.index }));
@@ -279,14 +280,18 @@ export const browser = {
             if (event.data?.type === 'frame-failed') tab.fail();
             if (event.data?.type === 'payload-crash') playError();
             if (event.data?.type === 'payload-run') shell.ending('good');
-            if (event.data?.type === 'civis-login') {
-                civis.session = true;
-                shell.openVault('ending', event.data.password).catch(() => {});
+            if (event.data?.type === 'civis-login') login = shell.openVault('ending', event.data.password).catch(() => {});
+            if (event.data?.type === 'civis-logout') {
+                delete shell.state.keys.ending;
+                delete shell.vaults.ending;
             }
-            if (event.data?.type === 'civis-logout') civis.session = false;
             if (event.data?.type === 'civis-uploaded') civis.uploaded = true;
             if (event.data?.type === 'civis-state') {
-                tab.frameWindow?.postMessage({ type: 'civis-state', session: civis.session, uploaded: civis.uploaded }, location.origin);
+                login.then(() => {
+                    const session = Boolean(shell.state.keys.ending);
+
+                    tab.frameWindow?.postMessage({ type: 'civis-state', session, uploaded: civis.uploaded }, location.origin);
+                });
             }
             if (event.data?.type === 'pick-file') {
                 pickFile(win, shell, name => tab.frameWindow?.postMessage({ type: 'file-picked', name }, location.origin));

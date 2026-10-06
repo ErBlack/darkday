@@ -57,10 +57,10 @@ export const crypTool = {
         if (load) load(path);
         else pending = path;
     },
-    mount(content, win, { state, flags, vaults, trash, unlock, openLink, fileSystem, khaos, appState, achievements }) {
+    mount(content, win, { state, flags, vaults, trash, changes, unlock, openLink, fileSystem, khaos, appState, achievements }) {
         content.classList.add('os-pane', 'cryptool');
 
-        const watch = watchEntry(win, kind => spy(kind, { flags, achievements }));
+        const watch = watchEntry(win, kind => spy(kind, { state, achievements }));
 
         const mapping = state.cipher;
         let entries = [];
@@ -330,10 +330,32 @@ export const crypTool = {
             onCancel: () => opened || win.close(),
         }));
 
+        const available = () => flags.flashInserted && vaults.flash && !trash.isDeleted(vaults.flash.data.CRYPTOOL_PATH);
+
+        const close = () => {
+            opened = false;
+            entries = [];
+            memory.path = null;
+            selected = null;
+            caret = null;
+            header.hidden = true;
+            nav.hidden = true;
+            copy.hidden = true;
+            date.replaceChildren();
+            body.replaceChildren();
+            watch.show(null);
+            win.setTitle(crypTool.title);
+            ask();
+        };
+
+        const onChange = () => {
+            if (opened && !available()) close();
+        };
+
         const show = path => {
             const vault = vaults.flash;
 
-            if (!flags.flashInserted || !vault || normalize(path) !== normalize(vault.data.CRYPTOOL_PATH)) {
+            if (!available() || normalize(path) !== normalize(vault.data.CRYPTOOL_PATH)) {
                 const error = win.open(notFound(path));
                 const previousClose = error.onClose;
                 error.onClose = () => {
@@ -399,6 +421,9 @@ export const crypTool = {
                 event.preventDefault();
                 if (caret) moveCaret(1);
                 else go(index + 1);
+            } else if (event.key === 'PageUp' || event.key === 'PageDown') {
+                event.preventDefault();
+                go(index + (event.key === 'PageUp' ? -1 : 1));
             } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
                 event.preventDefault();
                 moveLine(event.key === 'ArrowDown' ? 1 : -1);
@@ -406,8 +431,10 @@ export const crypTool = {
         });
 
         load = show;
+        changes.addEventListener('change', onChange);
         win.onClose = () => {
             load = null;
+            changes.removeEventListener('change', onChange);
             watch.stop();
         };
 
