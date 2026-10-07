@@ -10,6 +10,7 @@ import { writeAutosave } from './game/save/write-autosave.js';
 import { autosaveState } from './game/save/autosave-state.js';
 import { unlock } from './engine/audio/unlock.js';
 import { sha256 } from './os/khaos/sha256.js';
+import { decodeCode } from './game/ending/win-code.js';
 
 const EGG_DATE = new Date('2026-10-10T08:00:00.000Z');
 const DEBUG_HASH = 'c1cd3a1c4e3e37e1410f9f5ebde39dc456f161450316523453f0f8e9f149173c';
@@ -228,5 +229,7 @@ const init = async () => {
     invitation.addEventListener('click', onClick, true);
     invitation.addEventListener('contextmenu', event => event.preventDefault());
 };
+
+window.decode = decodeCode;
 
 init();

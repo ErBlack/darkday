@@ -1,5 +1,6 @@
 import './dead-end.css';
 import { element } from '../dom/element.js';
+import { typeText } from '../khaos/type-text.js';
 
 const DARKEN_MS = 1500;
 const TEXT_DELAY_MS = 1000;
@@ -19,9 +20,24 @@ export const playDeadEnd = async onRestore => {
     curtain.classList.add('dead-end-dark');
     await wait(DARKEN_MS + TEXT_DELAY_MS);
 
-    for (const line of LINES) element('p', '', text).textContent = line;
+    const paragraphs = LINES.map(line => {
+        const paragraph = element('p', '', text);
+        paragraph.textContent = line;
+        paragraph.style.visibility = 'hidden';
+
+        return paragraph;
+    });
 
     text.classList.add('dead-end-text-shown');
+
+    for (const [index, paragraph] of paragraphs.entries()) {
+        if (index > 0) await wait(TEXT_DELAY_MS);
+
+        paragraph.replaceChildren();
+        paragraph.style.visibility = '';
+        await typeText(paragraph, LINES[index], 0, true);
+    }
+
     curtain.classList.add('dead-end-ready');
     await clicked(curtain);
     onRestore();

@@ -18,7 +18,7 @@ import { playEnding } from './ending/play-ending.js';
 import { rememberCode } from './ending/remember-code.js';
 import { loadVault } from '../os/vault/load-vault.js';
 import { Achievements } from './achievements/achievements.js';
-import { bonusLines } from './ending/bonus-lines.js';
+import { bonusLines, completed } from './ending/bonus-lines.js';
 
 const VIDEO_RATE = 1.25;
 const SCENES = { corridor, room, laptop };
@@ -142,12 +142,16 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
         const script = vault.data.ending;
         const variant = script.variants[kind];
         const lines = bonusLines(variant.lines, script.bonus, kind, achievements);
+        const max = completed(kind, achievements);
+        const { code, saved } = rememberCode(kind, max);
 
         ending = true;
         input.enabled = false;
         playEnding(script, { ...variant, lines }, {
             screen: screen.element,
-            code: rememberCode(kind),
+            code,
+            saved,
+            max,
             media: name => (vault.has(name) ? vault.url(name) : name),
             showArticle: url => screen.showArticle(url),
             standBy: () => screen.collapse(),

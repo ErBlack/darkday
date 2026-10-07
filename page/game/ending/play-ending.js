@@ -1,7 +1,7 @@
 import './ending.css';
 import { element } from '../../os/dom/element.js';
 import { playSound } from '../../engine/audio/play-sound.js';
-import { typedText } from '../../os/khaos/typed-text.js';
+import { typeText as type } from '../../os/khaos/type-text.js';
 import { loadVideo } from '../../engine/load-video.js';
 import { loadSound } from '../../engine/audio/load-sound.js';
 
@@ -15,37 +15,9 @@ const fade = (node, to, ms) => {
     return wait(ms);
 };
 
-const type = (node, text, ms, keep = false) => new Promise(resolve => {
-    const chars = [...text].map(char => {
-        const span = element('span', '', node);
-        span.textContent = char;
-        span.style.visibility = 'hidden';
-
-        return span;
-    });
-    const start = performance.now();
-
-    const frame = now => {
-        const shown = typedText(text, now - start);
-
-        chars.forEach((span, index) => {
-            span.textContent = shown[index] ?? text[index];
-            span.style.visibility = index < shown.length ? 'visible' : 'hidden';
-        });
-
-        if (keep && shown === text) return resolve();
-        if (keep || now - start < ms) return requestAnimationFrame(frame);
-
-        node.replaceChildren();
-        resolve();
-    };
-
-    requestAnimationFrame(frame);
-});
-
 const clicked = node => new Promise(resolve => node.addEventListener('click', resolve, { once: true }));
 
-export const playEnding = async (script, variant, { screen, code, media, showArticle, standBy, playVideo, onCode, onFinish }) => {
+export const playEnding = async (script, variant, { screen, code, saved, max, media, showArticle, standBy, playVideo, onCode, onFinish }) => {
     const curtain = element('div', 'ending', document.body);
     const text = element('div', 'ending-text', curtain);
     const veil = element('div', 'ending ending-screen', screen);
@@ -100,8 +72,13 @@ export const playEnding = async (script, variant, { screen, code, media, showArt
         await type(text, line.text ?? line, line.ms ?? script.lineMs);
     }
 
-    await wait(script.lineGapMs);
-    await type(text, script.code.intro, script.lineMs);
+    const intro = saved ? [script.code.again] : max ? script.code.max : [script.code.intro];
+
+    for (const line of intro) {
+        await wait(script.lineGapMs);
+        await type(text, line, script.lineMs);
+    }
+
     await wait(script.lineGapMs);
     await type(text, code, 0, true);
     onCode();
