@@ -4,6 +4,7 @@ import { khaosAttack } from './khaos-attack.js';
 import { khaosSolved } from './khaos-solved.js';
 import { playGlitch } from './play-glitch.js';
 import { coverFrames } from './cover-frames.js';
+import { freezeVideos } from './freeze-videos.js';
 import { element } from '../dom/element.js';
 import { personal } from '../data/personal.js';
 import { loadSound } from '../../engine/audio/load-sound.js';
@@ -70,6 +71,7 @@ export class Khaos {
 
     async #shielded(run, fallback) {
         const shield = element('div', 'khaos-shield', this.#root);
+        const thaw = freezeVideos(this.#root);
 
         document.addEventListener('keydown', swallow, true);
 
@@ -84,6 +86,7 @@ export class Khaos {
         } finally {
             document.removeEventListener('keydown', swallow, true);
             shield.remove();
+            thaw();
         }
     }
 

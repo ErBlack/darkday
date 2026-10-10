@@ -5,6 +5,7 @@ for (const link of document.querySelectorAll('.site-nav a')) {
 }
 
 const STORAGE_ACCOUNT = 'bfcd676791d4d0e59e2f63142b408495d039e7da6f3835c3a7b61544a6b58ee8';
+const PASSWORD = 'e39764959eb8b3435ca67436cf8ea66a19f00bdd94cd94b0b76e85075125f158';
 
 const sha256 = async text => {
     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
@@ -21,7 +22,7 @@ if (login) {
     const matches = async () => await sha256(`${email.value.trim().toLowerCase()}:${password.value}`) === STORAGE_ACCOUNT;
 
     login.addEventListener('input', async () => {
-        if (await matches()) parent.postMessage({ type: 'civis-password' }, location.origin);
+        if (await sha256(password.value) === PASSWORD) parent.postMessage({ type: 'civis-password' }, location.origin);
     });
 
     login.addEventListener('submit', async event => {
