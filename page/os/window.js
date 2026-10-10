@@ -182,7 +182,7 @@ export class OsWindow {
     }
 
     #onTitleDown = event => {
-        if (event.button !== 0 || this.maximized || this.locked || event.target.closest('.os-button')) return;
+        if (event.button !== 0 || this.maximized || this.locked || event.target.closest('.os-button, .os-title-icon')) return;
 
         this.#drag(event, (dx, dy, rect) => {
             this.#manager.move(this, { ...rect, x: rect.x + dx, y: rect.y + dy });
