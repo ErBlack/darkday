@@ -18,11 +18,16 @@ if (login) {
     const note = login.querySelector('.form-note');
     const email = login.querySelector('input[type=email]');
     const password = login.querySelector('input[type=password]');
+    const matches = async () => await sha256(`${email.value.trim().toLowerCase()}:${password.value}`) === STORAGE_ACCOUNT;
+
+    login.addEventListener('input', async () => {
+        if (await matches()) parent.postMessage({ type: 'civis-password' }, location.origin);
+    });
 
     login.addEventListener('submit', async event => {
         event.preventDefault();
 
-        if (await sha256(`${email.value.trim().toLowerCase()}:${password.value}`) === STORAGE_ACCOUNT) {
+        if (await matches()) {
             parent.postMessage({ type: 'civis-login', password: password.value }, location.origin);
             location.href = 'storage.html';
 

@@ -280,6 +280,10 @@ export const browser = {
             if (event.data?.type === 'frame-failed') tab.fail();
             if (event.data?.type === 'payload-crash') playError();
             if (event.data?.type === 'payload-run') shell.ending('good');
+            if (event.data?.type === 'civis-password') {
+                shell.khaos.arm();
+                spring();
+            }
             if (event.data?.type === 'civis-login') login = shell.openVault('ending', event.data.password).catch(() => {});
             if (event.data?.type === 'civis-logout') {
                 delete shell.state.keys.ending;
