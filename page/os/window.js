@@ -68,6 +68,11 @@ export class OsWindow {
         });
         title.addEventListener('pointerdown', this.#onTitleDown);
         title.addEventListener('dblclick', event => {
+            if (event.target.closest('.os-title-icon')) {
+                if (!this.locked) manager.close(this);
+                return;
+            }
+
             if (!app.dialog && !event.target.closest('.os-button')) manager.toggleMaximize(this);
         });
         buttons.addEventListener('click', event => {
