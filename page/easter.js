@@ -170,9 +170,9 @@ const init = async () => {
         if (!event.isPrimary) return;
 
         cancelHold();
-        invitation.setPointerCapture(event.pointerId);
 
         hold = {
+            pointerId: event.pointerId,
             x: event.clientX,
             y: event.clientY,
             last: event,
@@ -182,6 +182,8 @@ const init = async () => {
 
     const onPointerMove = event => {
         if (hold) {
+            if (event.pointerId !== hold.pointerId) return;
+
             hold.last = event;
 
             if (Math.hypot(event.clientX - hold.x, event.clientY - hold.y) > HOLD_TOLERANCE) cancelHold();
@@ -198,7 +200,7 @@ const init = async () => {
     };
 
     const onPointerUp = event => {
-        cancelHold();
+        if (event.pointerId === hold?.pointerId) cancelHold();
 
         if (!drag || event.pointerId !== drag.pointerId) return;
 
@@ -223,9 +225,9 @@ const init = async () => {
     };
 
     invitation.addEventListener('pointerdown', onPointerDown);
-    invitation.addEventListener('pointermove', onPointerMove);
-    invitation.addEventListener('pointerup', onPointerUp);
-    invitation.addEventListener('pointercancel', onPointerUp);
+    addEventListener('pointermove', onPointerMove);
+    addEventListener('pointerup', onPointerUp);
+    addEventListener('pointercancel', onPointerUp);
     invitation.addEventListener('click', onClick, true);
     invitation.addEventListener('contextmenu', event => event.preventDefault());
 };
