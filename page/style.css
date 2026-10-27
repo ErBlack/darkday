@@ -13,56 +13,49 @@ body {
     font-size: 16px;
 }
 
-#invitation {
-    aspect-ratio: 1/1.5;
+#home {
+    align-self: center;
+    display: grid;
+    justify-items: center;
+    gap: clamp(1.5rem, 4vw, 3rem);
     background: url('/assets/paper.webp') no-repeat center/cover;
-    padding: 3rem;
+    padding: clamp(2rem, 6vw, 4rem) clamp(2rem, 8vw, 6rem);
     font-family: 'Playwrite GB S', system-ui;
     font-optical-sizing: auto;
     color: var(--color-text);
     font-size: clamp(1rem, 2vw, 1.5rem);
     box-sizing: border-box;
-    width: clamp(390px, 65vw, 850px);
-
-    section:not(:last-child) {
-        margin-bottom: clamp(0.5rem, 5vw, 4rem);
-    }
+    width: clamp(340px, 65vw, 850px);
+    container-type: inline-size;
 
     h1 {
-        margin: 0;
+        margin: 0 -0.14em;
         text-align: center;
-        font-size: clamp(3rem, 8vw, 9rem);
+        white-space: nowrap;
+        font-size: calc(100cqi / 4.62);
         font-weight: 100;
     }
 
-    h2 {
-        font-size: clamp(2rem, 3vw, 3rem);
-        margin: 0 0 clamp(0.25em, 1em, 0.6em) 0;
-        font-weight: 200;
-    }
-
-    p,
-    ul {
-        line-height: 1.35em;
-    }
-
-    p:not(:last-child),
-    ul:not(:last-child) {
-        line-height: 1.35em;
-        margin: 0 0 clamp(1rem, 2vw, 2rem) 0;
-    }
-
-    ul {
-        list-style: none;
-        padding: 0;
-    }
-
-    li {
+    p {
         margin: 0;
-        display: grid;
-        gap: 1em;
-        grid-template-columns: 5em auto;
-        margin-bottom: 0.25em;
+        text-align: center;
+        line-height: 1.35em;
+    }
+
+    #start {
+        padding: 0.3em 1.2em;
+        border: 0.085em solid currentColor;
+        border-radius: 0.4em;
+        background: none;
+        color: var(--color-text);
+        font: inherit;
+        font-size: 1.4em;
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    #start:hover {
+        transform: scale(1.05);
     }
 
     svg {
@@ -82,7 +75,7 @@ body {
         display: grid;
         gap: 1.5em;
         grid-template-columns: repeat(3, max-content);
-        justify-content: space-between;
+        justify-content: center;
     }
 
     a {
@@ -100,8 +93,6 @@ body {
     }
 
     #code {
-        display: block;
-        margin-top: 0.6em;
         padding: 0.2em 0.1em;
         border: 0;
         border-bottom: 1px dashed currentColor;
@@ -118,41 +109,10 @@ body {
     }
 }
 
-body.egg {
-    #invitation {
-        --scale: 1;
-        user-select: none;
-        -webkit-user-select: none;
-        -webkit-touch-callout: none;
-        transform: translate(var(--x, 0px), var(--y, 0px)) scale(var(--scale));
-        transition: transform 0.3s ease-out;
-
-        &:active {
-            --scale: 1.005;
-            transition: transform 2s linear;
-        }
-    }
-
-    #invitation.armed {
-        touch-action: none;
-        cursor: grab;
-        will-change: transform;
-    }
-
-    #invitation.dragging {
-        cursor: grabbing;
-        transition: none;
-    }
-
-    #invitation.flying {
-        opacity: 0;
-        pointer-events: none;
-        transition: transform 0.6s ease-in, opacity 0.6s ease-in;
-    }
-}
-
 body.game {
-    #invitation {
+    #home,
+    #vignette,
+    #grain {
         display: none;
     }
 }
@@ -174,14 +134,7 @@ body.game {
     }
 }
 
-body.egg {
-    #vignette,
-    #grain {
-        display: none;
-    }
-}
-
-#invitation {
+#home {
     position: relative;
     z-index: 3;
 }

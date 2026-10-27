@@ -29,7 +29,7 @@ export const showCodeButton = () => {
                 button.textContent = savedCode() ?? '';
             }, COPIED_MS);
         });
-        document.getElementById('date').append(button);
+        document.getElementById('start').after(button);
     }
 
     button.textContent = code;
