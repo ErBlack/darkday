@@ -1,6 +1,7 @@
 import { easeIn } from '../../engine/ease/ease-in.js';
 import { easeOut } from '../../engine/ease/ease-out.js';
 import { playSound } from '../../engine/audio/play-sound.js';
+import { raster } from '../../engine/raster.js';
 
 const DOOR = { x: 1247, y: 320, w: 450, h: 1080 };
 const LOCK = { x: 1244, y: 814, w: 50, h: 130 };
@@ -71,7 +72,7 @@ export const corridor = ({ state, items: { key, note }, inventory, status, open,
     };
 
     return {
-        background: 'assets/corridor.jpg',
+        background: raster('assets/corridor', 'jpg'),
         items: [
             { item: key, when: () => flags.keyState === 'floor' },
             { item: note, click: readNote },

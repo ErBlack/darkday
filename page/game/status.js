@@ -1,3 +1,5 @@
+import { announce } from './announce.js';
+
 const FADE_MS = 150;
 const HOLD_MS = 1500;
 const FONT = "500 96px 'Playwrite GB S'";
@@ -37,6 +39,7 @@ export class Status {
     }
 
     show(text) {
+        announce(text);
         this.#texture = renderText(text);
         this.#hold = HOLD_MS;
 

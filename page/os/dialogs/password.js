@@ -8,7 +8,10 @@ export const password = (text, { title, onSubmit, onCancel }) => ({
     mount(content, window) {
         content.classList.add('dialog');
 
-        element('div', 'dialog-text', content).textContent = text;
+        const message = element('div', 'dialog-text', content);
+        message.textContent = text;
+        message.id = `${window.titleText.id}-text`;
+        window.root.setAttribute('aria-describedby', message.id);
 
         const field = element('label', 'dialog-field', content);
         field.append('Password:');

@@ -4,10 +4,10 @@ import { renderNote } from './note.js';
 
 export const loadItems = async ({ state, renderer }) => {
     const [key, laptop, crowbar, flash, note] = await Promise.all([
-        loadImage('assets/items/key.png'),
-        loadImage('assets/items/laptop.png'),
-        loadImage('assets/items/crowbar.png'),
-        loadImage('assets/items/flash.png'),
+        loadImage('assets/items/key.webp'),
+        loadImage('assets/items/laptop.webp'),
+        loadImage('assets/items/crowbar.webp'),
+        loadImage('assets/items/flash.webp'),
         renderNote(),
     ]);
 

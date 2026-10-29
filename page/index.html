@@ -5,12 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="Content-Security-Policy" content="frame-src 'self' blob: https://www.google.com" />
         <title>Dark Day</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Playwrite+GB+S:ital,wght@0,100..400;1,100..400&display=block"
-            rel="stylesheet"
-        />
+        <link rel="preload" href="fonts/playwrite-gb-s.woff2" as="font" type="font/woff2" crossorigin />
+        <link rel="preload" href="assets/paper.webp" as="image" fetchpriority="high" />
         <link rel="stylesheet" href="style.css" />
 
         <script type="module" src="grain-size.js"></script>
@@ -20,9 +16,13 @@
             name="description"
             content="A point-and-click quest with a touch of detective noir and a dash of cyberpunk."
         />
-        <meta property="og:image " name="og:image " content="logo.jpg" />
-        <meta property="og:image:height " name="og:image:height " content="1024" />
-        <meta property="og:image:width " name="og:image:width " content="1024" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://erblack.me/darkday/" />
+        <meta property="og:title" content="Dark Day" />
+        <meta property="og:description" content="A point-and-click quest with a touch of detective noir and a dash of cyberpunk." />
+        <meta property="og:image" content="https://erblack.me/darkday/logo.jpg" />
+        <meta property="og:image:height" content="1024" />
+        <meta property="og:image:width" content="1024" />
     </head>
     <body>
         <div id="backdrop"></div>
@@ -47,6 +47,7 @@
                     Bluesky
                 </a>
             </p>
+            <p class="warning">Contains flashing images.</p>
         </section>
     </body>
 </html>

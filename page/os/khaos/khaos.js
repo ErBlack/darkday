@@ -9,10 +9,14 @@ import { element } from '../dom/element.js';
 import { personal } from '../data/personal.js';
 import { loadSound } from '../../engine/audio/load-sound.js';
 import { loadVideo } from '../../engine/load-video.js';
+import { takePhoto } from '../camera/take-photo.js';
+import { locate } from '../location/locate.js';
+import { granted } from '../spy/granted.js';
 
 const PASSWORD = 'e39764959eb8b3435ca67436cf8ea66a19f00bdd94cd94b0b76e85075125f158';
 const BROWSER = 'browser';
 const MAX_SCALE = 2;
+const COLLECT_MS = 10000;
 
 const loadCapturer = () => import('modern-screenshot');
 
@@ -21,6 +25,20 @@ const OVERLAYS = ['khaos-shield', 'khaos-glitch'];
 const foreign = node => node instanceof HTMLImageElement && new URL(node.src, location.href).origin !== location.origin;
 
 const captured = node => !OVERLAYS.some(name => node.classList?.contains(name)) && !foreign(node);
+
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const collect = async achievements => {
+    const [camera, location] = await Promise.all([granted('camera'), granted('geolocation')]);
+
+    return Promise.race([
+        Promise.all([
+            personal.photo || !camera || takePhoto(achievements).catch(() => {}),
+            personal.location || !location || locate(achievements).catch(() => {}),
+        ]),
+        wait(COLLECT_MS),
+    ]);
+};
 
 const swallow = event => {
     event.preventDefault();
@@ -31,15 +49,17 @@ export class Khaos {
     #state;
     #windows;
     #root;
+    #achievements;
     #capturer = null;
 
     onSolve = null;
     onSolved = null;
 
-    constructor(state, windows, root) {
+    constructor(state, windows, root, achievements) {
         this.#state = state;
         this.#windows = windows;
         this.#root = root;
+        this.#achievements = achievements;
 
         if (state.khaos === 'armed' || state.khaos === 'active') this.#preload();
     }
@@ -92,6 +112,8 @@ export class Khaos {
 
     attack(hang) {
         return this.#shielded(async (capture, domToCanvas, scale) => {
+            await collect(this.#achievements);
+
             const covers = await coverFrames(this.#root, domToCanvas, scale);
             const image = await capture();
 

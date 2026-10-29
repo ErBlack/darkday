@@ -15,6 +15,8 @@ export class Taskbar {
 
         this.start = element('button', 'os-start', root);
         this.start.type = 'button';
+        this.start.setAttribute('aria-haspopup', 'menu');
+        this.start.setAttribute('aria-expanded', 'false');
         icon('assets/os/icons/start.png', '', this.start);
         element('span', '', this.start).textContent = 'Start';
 
@@ -58,6 +60,7 @@ export class Taskbar {
         for (const window of windows) {
             const button = this.#buttons.get(window);
             button.classList.toggle('os-task-active', window === focused);
+            button.setAttribute('aria-pressed', String(window === focused));
             button.querySelector('.os-task-text').textContent = window.title;
         }
     }

@@ -1,11 +1,12 @@
 .maps-view {
+    position: relative;
     display: flex;
     flex: 1;
     min-height: 0;
     align-items: center;
     justify-content: center;
     padding: 6px;
-    background: #9fc4e8;
+    background: #a7c3e6;
     box-shadow: var(--bevel-in);
     overflow: hidden;
 }
@@ -39,4 +40,18 @@
     border: 1px solid var(--shadow);
     white-space: nowrap;
     font-size: 11px;
+}
+
+.maps-credit {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    padding: 0 4px;
+    color: #000;
+    text-shadow: 0 0 2px #fff, 0 0 2px #fff;
+    font-size: 10px;
+
+    a {
+        color: inherit;
+    }
 }

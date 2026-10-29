@@ -10,7 +10,7 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 export const runBios = async (parent, flags) => {
     const root = element('div', 'laptop-bios', parent);
     const logo = element('img', 'laptop-bios-logo', root);
-    logo.src = 'assets/os/bios-logo.png';
+    logo.src = 'assets/os/bios-logo.webp';
     logo.alt = '';
     const text = element('div', 'laptop-bios-text', root);
 

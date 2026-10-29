@@ -18,6 +18,8 @@ const PARAMS = ['flicker', 'blocks', 'tear', 'rgb', 'noise', 'scan', 'shake', 'i
 
 const lerp = (from, to, t) => from + (to - from) * t;
 
+const calm = params => ({ ...params, flash: 0, invert: params.invert >= 0.999 ? 1 : 0, shake: params.shake * 0.2 });
+
 const timeline = steps => {
     let start = 0;
     let previous = {};
@@ -155,12 +157,14 @@ export const playGlitch = async (parent, image, next, { steps, video, voice, lin
 
     const glitch = await createGlitchSlots(sounds);
 
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     await new Promise(resolve => {
         const start = performance.now();
 
         const frame = now => {
             const elapsed = now - start;
-            const params = sample(segments, elapsed);
+            const params = reduced ? calm(sample(segments, elapsed)) : sample(segments, elapsed);
 
             const spoken = voiceStart === null ? elapsed : (context.currentTime - voiceStart) * 1000 + voice.at;
             const line = lineAt(lines, spoken);
@@ -201,7 +205,7 @@ export const playGlitch = async (parent, image, next, { steps, video, voice, lin
                 upload(gl, revealTexture, 4, revealLayer.canvas);
             }
 
-            gl.uniform1f(uniforms.u_revealAlpha, moment === undefined || Math.random() < 0.5 ? 1 : 0);
+            gl.uniform1f(uniforms.u_revealAlpha, reduced || moment === undefined || Math.random() < 0.5 ? 1 : 0);
 
             const slots = glitch.update(params, elapsed);
 

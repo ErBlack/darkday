@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Playwrite GB S';
+    src: url('/fonts/playwrite-gb-s.woff2') format('woff2');
+    font-weight: 100 400;
+    font-display: swap;
+}
+
 body {
     --color-text: #322D6F;
     margin: 0;
@@ -27,6 +34,8 @@ body {
     box-sizing: border-box;
     width: clamp(340px, 65vw, 850px);
     container-type: inline-size;
+    --icon-size: clamp(3rem, 7vw, 6rem);
+    --line: calc(var(--icon-size) * 0.74 / 24);
 
     h1 {
         margin: 0 -0.14em;
@@ -42,10 +51,15 @@ body {
         line-height: 1.35em;
     }
 
+    .warning {
+        font-size: 0.75em;
+    }
+
     #start {
-        padding: 0.3em 1.2em;
-        border: 0.085em solid currentColor;
+        padding: calc(0.3em + var(--line)) calc(1.2em + var(--line));
+        border: 0;
         border-radius: 0.4em;
+        box-shadow: inset 0 0 0 var(--line) currentColor;
         background: none;
         color: var(--color-text);
         font: inherit;
@@ -58,10 +72,13 @@ body {
         transform: scale(1.05);
     }
 
+    #start[aria-busy] {
+        cursor: progress;
+    }
+
     svg {
-        --size: clamp(3rem, 7vw, 6rem);
-        width: var(--size);
-        height: var(--size);
+        width: var(--icon-size);
+        height: var(--icon-size);
         fill: none;
         stroke: currentColor;
         stroke-width: 0.74;
@@ -116,6 +133,16 @@ body.game {
         display: none;
     }
 }
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 #game {
     position: fixed;
     inset: 0;
@@ -168,7 +195,7 @@ body.game {
     content: '';
     position: absolute;
     inset: 0;
-    background: url('/assets/grain.png') 0 0 / var(--grain-size, 256px) var(--grain-size, 256px) repeat;
+    background: url('/assets/grain.webp') 0 0 / var(--grain-size, 256px) var(--grain-size, 256px) repeat;
     image-rendering: pixelated;
 }
 
@@ -180,4 +207,10 @@ body.game {
     height: 100dvh;
     z-index: 0;
     background: url('/assets/corridor.jpg') center / cover no-repeat;
+}
+
+@supports (background-image: image-set(url('x') type('image/avif'))) {
+    #backdrop {
+        background-image: image-set(url('/assets/corridor.avif') type('image/avif'), url('/assets/corridor.jpg') type('image/jpeg'));
+    }
 }

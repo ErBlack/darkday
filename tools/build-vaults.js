@@ -5,7 +5,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SECRETS = resolve(ROOT, 'secrets');
 const OUT = resolve(ROOT, 'page/public/assets/vaults');
-const ITERATIONS = 300000;
 const TYPES = {
     '.webp': 'image/webp',
     '.jpg': 'image/jpeg',
@@ -26,17 +25,7 @@ const replacer = function (key, value) {
     return this[key] instanceof Date ? local(this[key]) : value;
 };
 
-const deriveKey = async (password, salt) => {
-    const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
-
-    return crypto.subtle.deriveKey(
-        { name: 'PBKDF2', salt, iterations: ITERATIONS, hash: 'SHA-256' },
-        material,
-        { name: 'AES-GCM', length: 256 },
-        false,
-        ['encrypt'],
-    );
-};
+const importKey = hex => crypto.subtle.importKey('raw', Buffer.from(hex, 'hex'), 'AES-GCM', false, ['encrypt']);
 
 const pack = async (data, media) => {
     const files = [];
@@ -66,12 +55,11 @@ await mkdir(OUT, { recursive: true });
 for (const vault of vaults) {
     const data = await import(pathToFileURL(resolve(SECRETS, vault.data)));
     const plain = await pack({ ...data }, vault.media && resolve(SECRETS, vault.media));
-    const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    const key = await deriveKey(vault.password, salt);
+    const key = await importKey(vault.key);
     const cipher = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain));
     const target = resolve(OUT, `${vault.name}.bin`);
 
-    await writeFile(target, Buffer.concat([salt, iv, cipher]));
+    await writeFile(target, Buffer.concat([iv, cipher]));
     console.log(`${vault.name}.bin ${(cipher.length / 1024).toFixed(0)} KiB`);
 }

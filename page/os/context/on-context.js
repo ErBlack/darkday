@@ -31,6 +31,17 @@ export const onContext = (target, handler) => {
         handler(event);
     });
 
+    target.addEventListener('keydown', event => {
+        if (event.key !== 'ContextMenu' && !(event.shiftKey && event.key === 'F10')) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const rect = event.target.getBoundingClientRect();
+
+        handler({ target: event.target, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 });
+    });
+
     target.addEventListener('pointerdown', event => {
         if (event.pointerType !== 'touch' || claimed.has(event)) return;
 

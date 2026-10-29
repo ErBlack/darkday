@@ -43,4 +43,12 @@
             color: #fff;
         }
     }
+
+    &:focus {
+        outline: none;
+    }
+
+    &:focus-visible span {
+        outline: 1px dotted #000;
+    }
 }

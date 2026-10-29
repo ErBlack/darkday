@@ -16,7 +16,10 @@ export const dialog = (text, { title, icon: kind, buttons }) => ({
 
         const body = element('div', 'dialog-body', content);
         icon(`assets/os/icons/${kind}.png`, 'dialog-icon', body);
-        element('div', 'dialog-text', body).textContent = text;
+        const message = element('div', 'dialog-text', body);
+        message.textContent = text;
+        message.id = `${window.titleText.id}-text`;
+        window.root.setAttribute('aria-describedby', message.id);
 
         const row = element('div', 'dialog-buttons', content);
 

@@ -1,8 +1,10 @@
+import { raster } from '../../engine/raster.js';
+
 export const users = [
     {
         name: 'drifter_ana',
         picture: 'assets/os/users/drifter_ana.jpg',
-        wallpaper: 'assets/os/wallpapers/drifter_ana.webp',
+        wallpaper: raster('assets/os/wallpapers/drifter_ana', 'webp'),
         vault: 'ana',
         hint: 'my date of birth',
     },

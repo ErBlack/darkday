@@ -73,3 +73,9 @@
     mix-blend-mode: screen;
     opacity: var(--glass, 0.55);
 }
+
+@supports (background-image: image-set(url('x') type('image/avif'))) {
+    .laptop-glass {
+        background-image: image-set(url('/assets/laptop.avif') type('image/avif'), url('/assets/laptop.jpg') type('image/jpeg'));
+    }
+}

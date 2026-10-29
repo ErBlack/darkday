@@ -111,6 +111,8 @@ export class Inventory {
                 ? []
                 : {
                       rect: this.#cellRect(index),
+                      slot: index,
+                      item,
                       action: () => {
                           if (!this.held) this.pick(item);
                           else if (this.held === item) this.putBack();

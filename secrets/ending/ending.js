@@ -1,0 +1,60 @@
+export const ending = {
+    music: { src: 'final.mp3', at: 500, volume: 0.1, fadeTo: 1, fadeMs: 15000 },
+    fadeMs: 3000,
+    darkenMs: 3500,
+    title: { text: 'Two days later', at: 2000, until: 6000 },
+    revealAt: 6900,
+    standByAt: 16500,
+    videoAt: 17600,
+    blackoutAfterMusic: 28000,
+    videoFadeLeadMs: 250,
+    lineMs: 4000,
+    linesAt: 900,
+    lineGapMs: 1300,
+    code: { intro: 'Here is your code', again: 'Your code is still the same', max: ['About your code', 'I think I can give you a new one'],copied: 'Copied', holdMs: 1500 },
+    bonus: {
+        after: 'You beat the game',
+        both: ['And find both endings'],
+        all: ['And unlock all achievements', 'You actually spend a lot of time with my game', 'Good for you!', 'I\'m very pleased', 'Still'],
+    },
+    pages: {
+        'dnevnisignal.rs/crime/civis-office-body': 'civis-office-body.html',
+        'dnevnisignal.rs/crime/danube-body': 'danube-body.html',
+    },
+    variants: {
+        good: {
+            article: 'dnevnisignal.rs/crime/civis-office-body',
+            video: 'ending-good.mp4',
+            videoRate: 1.15,
+            videoSounds: [
+                { src: 'assets/sounds/door-open.mp3', at: 6250 },
+                { src: 'ana-question.mp3', at: 9000, volume: 2.5 },
+            ],
+            lines: [
+                'That\'s it',
+                'You beat the game',
+                'The world is safe',
+                'For now',
+                'But Kháos will wait',
+                'So',
+            ],
+        },
+        bad: {
+            article: 'dnevnisignal.rs/crime/danube-body',
+            video: 'ending-bad.mp4',
+            videoRate: 1.15,
+            videoSounds: [
+                { src: 'assets/sounds/door-open.mp3', at: 6380 },
+                { src: 'shot.mp3', at: 11470 },
+            ],
+            lines: [
+                'That\'s it',
+                'You beat the game',
+                'Mankind will tear itself apart',
+                'But it doesn\'t bother you',
+                'You are dead',
+                'Anyway',
+            ],
+        },
+    },
+};

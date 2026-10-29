@@ -1,6 +1,7 @@
 import './toast.css';
 import { element } from '../../os/dom/element.js';
 import { icon } from '../../os/dom/icon.js';
+import { announce } from '../announce.js';
 
 const SHOW_MS = 5000;
 const FADE_MS = 400;
@@ -10,7 +11,10 @@ let holder = null;
 export const showToast = ({ title, description, icon: src }) => {
     if (!holder?.isConnected) holder = element('div', 'achievement-toasts', document.body);
 
+    announce(`Achievement unlocked: ${title}. ${description}`);
+
     const toast = element('div', 'achievement-toast', holder);
+    toast.setAttribute('aria-hidden', 'true');
     icon(src, 'achievement-toast-icon', toast);
 
     const text = element('div', 'achievement-toast-text', toast);

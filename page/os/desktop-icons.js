@@ -14,11 +14,20 @@ export class DesktopIcons {
 
         for (const item of items) {
             const entry = element('div', 'os-icon', this.root);
+            entry.tabIndex = 0;
+            entry.setAttribute('role', 'button');
             this.#images.set(item, icon(srcOf(item, shell), '', entry));
             element('span', '', entry).textContent = item.label;
 
             entry.addEventListener('click', () => this.#select(entry));
             entry.addEventListener('dblclick', () => onOpen(item));
+            entry.addEventListener('focus', () => this.#select(entry));
+            entry.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    onOpen(item);
+                }
+            });
             onContext(entry, event => {
                 this.#select(entry);
                 onMenu(item, event);

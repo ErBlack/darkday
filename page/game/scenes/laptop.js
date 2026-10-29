@@ -1,6 +1,7 @@
 import { easeOut } from '../../engine/ease/ease-out.js';
 import { playSound } from '../../engine/audio/play-sound.js';
 import { playSystemSound } from '../../os/audio/play-system-sound.js';
+import { raster } from '../../engine/raster.js';
 
 const BODY = { x: 780, y: 1050, w: 1430, h: 450 };
 const WALL_LEFT = { x: 0, y: 0, w: 952, h: 990 };
@@ -47,8 +48,8 @@ export const laptop = ({ state, items: { flash }, inventory, screen, go }) => {
     };
 
     return {
-        background: 'assets/laptop.jpg',
-        patches: [{ src: 'assets/patches/led.png', rect: LED, when: () => screen.led > 0, alpha: () => screen.led }],
+        background: raster('assets/laptop', 'jpg'),
+        patches: [{ src: 'assets/patches/led.webp', rect: LED, when: () => screen.led > 0, alpha: () => screen.led }],
         items: [{ item: flash, fixed: true, when: inserted }],
         targets: [
             { rect: BODY, when: () => !inserted(), use: { flash: insertFlash } },

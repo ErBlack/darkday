@@ -5,6 +5,14 @@ import { projectOnMap } from './projection.js';
 import { requestPosition } from '../../location/request-position.js';
 import { storeLocation } from '../../location/store-location.js';
 
+const link = (text, href, parent) => {
+    const anchor = element('a', '', parent);
+    anchor.href = href;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener';
+    anchor.textContent = text;
+};
+
 const formatCoordinate = (value, positive, negative) => `${Math.abs(value).toFixed(4)}° ${value >= 0 ? positive : negative}`;
 
 export const maps = {
@@ -19,12 +27,18 @@ export const maps = {
 
         const view = element('div', 'maps-view', content);
         const frame = element('div', 'maps-frame', view);
-        icon('assets/os/map.webp', 'maps-image', frame);
+        icon('assets/os/map.svg', 'maps-image', frame);
         const pin = element('span', 'maps-pin', frame);
         pin.textContent = '📍';
         pin.hidden = true;
         const label = element('span', 'maps-label', frame);
         label.hidden = true;
+
+        const credit = element('div', 'maps-credit', view);
+        credit.append('Place names: ');
+        link('GeoNames', 'https://www.geonames.org/', credit);
+        credit.append(', ');
+        link('CC BY 4.0', 'https://creativecommons.org/licenses/by/4.0/', credit);
 
         const status = element('div', 'os-status', content);
         status.textContent = 'Locating...';

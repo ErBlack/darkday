@@ -1,6 +1,7 @@
 import { Renderer } from '../engine/renderer.js';
 import { Input } from '../engine/input.js';
 import { loadImage } from '../engine/load-image.js';
+import { raster } from '../engine/raster.js';
 import { loadVideo } from '../engine/load-video.js';
 import { VideoLayer } from '../engine/layers/video-layer.js';
 import { unlock } from '../engine/audio/unlock.js';
@@ -81,6 +82,8 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
     });
 
     const show = (name, scene) => {
+        if (name === 'laptop') loadVault('ending').catch(() => {});
+
         state.scene = name;
         stage.scene = scene;
         screen.show(name === 'laptop');
@@ -178,32 +181,34 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
         compose();
     })();
 
-    Promise.all([
-        loadImage('assets/room.jpg'),
-        loadImage('assets/laptop.jpg'),
-        loadVideo('assets/video/door-open.mp4'),
-        loadVideo('assets/video/to-laptop.mp4'),
-        loadVideo('assets/video/to-room.mp4'),
-        loadSound('assets/sounds/key-drop.mp3'),
-        loadSound('assets/sounds/door-unlock.mp3'),
-        loadSound('assets/sounds/door-open.mp3'),
-        loadSound('assets/sounds/floor-board.mp3'),
-        loadSound('assets/sounds/door-locked.mp3'),
-        loadSound('assets/sounds/floor-creak.mp3'),
-        loadSound('assets/sounds/cabinet-open.mp3'),
-        loadSound('assets/sounds/flash-insert.mp3'),
-        loadSound('assets/sounds/usb-connect.mp3'),
-        loadSound('assets/sounds/startup.mp3'),
-        loadSound('assets/sounds/shutdown.mp3'),
-        loadSound('assets/sounds/fan.mp3'),
-        loadSound('assets/sounds/logon.mp3'),
-        loadSound('assets/sounds/logoff.mp3'),
-        loadSound('assets/sounds/minimize.mp3'),
-        loadSound('assets/sounds/restore.mp3'),
-        loadSound('assets/sounds/error.mp3'),
-        loadSound('assets/sounds/achievement.mp3'),
-        loadVault('ending'),
-    ]).catch(() => {});
+    let preloading = null;
+
+    const preload = () =>
+        (preloading ??= Promise.all([
+            loadImage(raster('assets/room', 'jpg')),
+            loadImage(raster('assets/laptop', 'jpg')),
+            loadVideo('assets/video/door-open.mp4'),
+            loadVideo('assets/video/to-laptop.mp4'),
+            loadVideo('assets/video/to-room.mp4'),
+            loadSound('assets/sounds/key-drop.mp3'),
+            loadSound('assets/sounds/door-unlock.mp3'),
+            loadSound('assets/sounds/door-open.mp3'),
+            loadSound('assets/sounds/floor-board.mp3'),
+            loadSound('assets/sounds/door-locked.mp3'),
+            loadSound('assets/sounds/floor-creak.mp3'),
+            loadSound('assets/sounds/cabinet-open.mp3'),
+            loadSound('assets/sounds/flash-insert.mp3'),
+            loadSound('assets/sounds/usb-connect.mp3'),
+            loadSound('assets/sounds/startup.mp3'),
+            loadSound('assets/sounds/shutdown.mp3'),
+            loadSound('assets/sounds/fan.mp3'),
+            loadSound('assets/sounds/logon.mp3'),
+            loadSound('assets/sounds/logoff.mp3'),
+            loadSound('assets/sounds/minimize.mp3'),
+            loadSound('assets/sounds/restore.mp3'),
+            loadSound('assets/sounds/error.mp3'),
+            loadSound('assets/sounds/achievement.mp3'),
+        ]).catch(() => {}));
 
     return {
         ready,
@@ -217,12 +222,14 @@ export const createGame = ({ state = createState(), onEnd = null } = {}) => {
         },
         start: async () => {
             unlock().catch(() => {});
+            preload();
             await ready;
             renderer.setGrainAnimated(true);
             input.enabled = !screen.expanded;
         },
         destroy: () => {
             input.enabled = false;
+            input.destroy();
             renderer.destroy();
             screen.destroy();
             canvas.remove();

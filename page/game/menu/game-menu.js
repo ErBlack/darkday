@@ -21,9 +21,15 @@ export class GameMenu {
         this.#button = element('button', 'game-menu-button', document.body);
         this.#button.type = 'button';
         this.#button.textContent = 'Menu';
+        this.#button.setAttribute('aria-expanded', 'false');
         this.#button.addEventListener('click', () => this.toggle());
 
         this.#root = element('div', 'game-menu game-menu-closed', document.body);
+        this.#root.id = 'game-menu';
+        this.#root.setAttribute('role', 'dialog');
+        this.#root.setAttribute('aria-label', 'Menu');
+        this.#root.inert = true;
+        this.#button.setAttribute('aria-controls', this.#root.id);
 
         const column = element('div', 'game-menu-column', this.#root);
         const list = element('nav', 'game-menu-items', column);
@@ -47,6 +53,8 @@ export class GameMenu {
         item('Exit', onExit);
 
         this.#grid = element('div', 'game-menu-achievements', column);
+        this.#grid.setAttribute('role', 'list');
+        this.#grid.setAttribute('aria-label', 'Achievements');
 
         addEventListener('keydown', this.#onKeyCapture, true);
         addEventListener('keydown', this.#onKey);
@@ -62,12 +70,20 @@ export class GameMenu {
         this.#render();
         this.#load.disabled = !this.#canLoad();
         this.#root.classList.remove('game-menu-closed');
+        this.#root.inert = false;
         this.#button.classList.add('game-menu-button-pressed');
+        this.#button.setAttribute('aria-expanded', 'true');
+        this.#root.querySelector('.game-menu-item')?.focus();
     }
 
     close() {
+        const focused = this.#root.contains(document.activeElement);
+
         this.#root.classList.add('game-menu-closed');
+        this.#root.inert = true;
         this.#button.classList.remove('game-menu-button-pressed');
+        this.#button.setAttribute('aria-expanded', 'false');
+        if (focused) this.#button.focus();
     }
 
     toggle() {
@@ -85,10 +101,12 @@ export class GameMenu {
             const shown = achievement.hidden && !done ? hidden : achievement;
             const cell = element('div', 'game-menu-achievement', this.#grid);
 
+            cell.setAttribute('role', 'listitem');
             cell.classList.toggle('game-menu-locked', !done);
             icon(shown.icon, '', cell);
             element('strong', '', cell).textContent = shown.title;
             element('span', '', cell).textContent = shown.description;
+            element('span', 'visually-hidden', cell).textContent = done ? 'Unlocked' : 'Locked';
         }
     }
 

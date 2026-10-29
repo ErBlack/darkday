@@ -134,10 +134,14 @@ export const explorer = {
             path.value = pathOf(trail);
             back.disabled = history.length === 0;
             up.disabled = trail.length === 1;
+            const refocus = view.contains(document.activeElement);
+
             view.replaceChildren();
 
             for (const node of childrenOf()) {
                 const item = element('div', 'explorer-item', view);
+                item.tabIndex = 0;
+                item.setAttribute('role', 'button');
                 item.classList.toggle('explorer-selected', isSelected(node));
                 icon(iconUrl(node.path === RECYCLE_BIN ? trashIcon(shell.trash) : node.icon), '', item);
                 element('span', '', item).textContent = node.name;
@@ -150,11 +154,24 @@ export const explorer = {
                     if (node.device && shell.floppy.playing) shell.floppy.toggle();
                 });
                 item.addEventListener('dblclick', () => node.trashed || open(node));
+                item.addEventListener('focus', () => {
+                    selected = node;
+
+                    for (const other of view.children) other.classList.toggle('explorer-selected', other === item);
+                });
+                item.addEventListener('keydown', event => {
+                    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+                    event.preventDefault();
+                    if (!node.trashed) open(node);
+                });
                 onContext(item, event => {
                     selected = node;
                     render();
                     menuAt(event, itemMenu(node));
                 });
+
+                if (refocus && isSelected(node)) item.focus();
             }
         };
 

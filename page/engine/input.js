@@ -19,6 +19,11 @@ export class Input {
         renderer.canvas.addEventListener('pointerup', this.#onPointerUp);
         renderer.canvas.addEventListener('pointermove', this.#onPointerMove);
         renderer.canvas.addEventListener('contextmenu', this.#onContextMenu);
+        addEventListener('keydown', this.#onKeyDown);
+    }
+
+    destroy() {
+        removeEventListener('keydown', this.#onKeyDown);
     }
 
     get active() {
@@ -46,6 +51,22 @@ export class Input {
 
         if (hotspot) hotspot.action();
         else if (held) this.#miss(held);
+    };
+
+    #onKeyDown = event => {
+        if (!this.enabled || event.repeat || event.altKey || event.ctrlKey || event.metaKey || !/^[1-9]$/.test(event.key)) return;
+        if (event.target.closest?.('input, textarea, [contenteditable]')) return;
+
+        const slot = Number(event.key) - 1;
+        const find = () => this.active.find(hotspot => hotspot.slot === slot);
+        const target = find();
+
+        if (!target) return;
+
+        if (this.#held() && this.#held() !== target.item) this.#release();
+
+        find()?.action();
+        this.#renderer.canvas.style.cursor = this.#held() ? 'none' : '';
     };
 
     #onPointerMove = event => {

@@ -487,9 +487,11 @@ body:has(.os-desktop) {
         height: 24px;
     }
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
         background: var(--title-from);
         color: #fff;
+        outline: none;
     }
 }
 
@@ -513,7 +515,13 @@ body:has(.os-desktop) {
         color: #fff;
     }
 
-    &:hover > .os-start-submenu {
+    &.os-start-entry-open > .os-start-item {
+        background: var(--title-from);
+        color: #fff;
+    }
+
+    &:hover > .os-start-submenu,
+    &.os-start-entry-open > .os-start-submenu {
         display: block;
     }
 }
@@ -582,6 +590,14 @@ body:has(.os-desktop) {
     &.os-icon-selected span {
         background: var(--title-from);
         text-shadow: none;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    &:focus-visible span {
+        outline: 1px dotted #fff;
     }
 }
 

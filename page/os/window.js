@@ -4,11 +4,15 @@ import { icon } from './dom/icon.js';
 
 const HANDLES = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
 const ANIMATION_MS = 180;
+const LABELS = { minimize: 'Minimize', maximize: 'Maximize', close: 'Close' };
+
+let ids = 0;
 
 const titleButton = (name, parent) => {
     const node = element('button', `os-button os-button-${name}`, parent);
     node.type = 'button';
     node.dataset.action = name;
+    node.setAttribute('aria-label', LABELS[name]);
 
     return node;
 };
@@ -41,11 +45,14 @@ export class OsWindow {
         this.root = element('div', 'os-window');
         this.root.tabIndex = -1;
         this.root.classList.toggle('os-window-dialog', Boolean(app.dialog));
+        this.root.setAttribute('role', app.dialog ? 'alertdialog' : 'dialog');
 
         const title = element('div', 'os-title', this.root);
         if (app.icon) icon(app.icon, 'os-title-icon', title);
         this.titleText = element('span', 'os-title-text', title);
         this.titleText.textContent = app.title;
+        this.titleText.id = `os-window-title-${(ids += 1)}`;
+        this.root.setAttribute('aria-labelledby', this.titleText.id);
 
         const buttons = element('div', 'os-title-buttons', title);
 
@@ -155,7 +162,9 @@ export class OsWindow {
         this.root.classList.toggle('os-window-maximized', this.maximized);
         this.root.classList.toggle('os-window-minimized', this.minimized);
         this.root.classList.toggle('os-window-disabled', Boolean(this.modal));
+        this.root.inert = Boolean(this.modal);
         this.maximizeButton?.classList.toggle('os-button-restore', this.maximized);
+        this.maximizeButton?.setAttribute('aria-label', this.maximized ? 'Restore' : 'Maximize');
 
         if (focused !== this.#active) {
             this.#active = focused;

@@ -75,6 +75,7 @@ export class LaptopScreen {
         }
 
         this.#host.classList.toggle('laptop-screen-full', state.flags.laptopExpanded);
+        this.#syncFocus();
         addEventListener('resize', this.#onResize);
         this.#apply();
     }
@@ -203,6 +204,17 @@ export class LaptopScreen {
         this.#desktop.onTurnOff = () => this.#shutDown();
         this.#desktop.onEnding = kind => this.onEnding?.(kind);
         this.#desktop.onEndingStart = () => this.onEndingStart?.();
+        this.#syncFocus();
+    }
+
+    #syncFocus(enter = false) {
+        const root = this.#desktop?.root;
+
+        if (!root) return;
+
+        root.inert = !this.#host.classList.contains('laptop-screen-full');
+
+        if (enter && !root.contains(document.activeElement)) root.querySelector('.os-window-focused, .os-icon')?.focus();
     }
 
 
@@ -276,6 +288,7 @@ export class LaptopScreen {
         this.#input.enabled = false;
         this.#host.classList.remove('laptop-screen-full');
         this.#host.classList.add('laptop-screen-zooming');
+        this.#syncFocus();
 
         const promise = new Promise(resolve => {
             this.#tween = { from: this.#progress, to, time: 0, resolve };
@@ -304,6 +317,7 @@ export class LaptopScreen {
         this.#state.flags.laptopExpanded = tween.to === 1;
         this.#host.classList.toggle('laptop-screen-full', tween.to === 1);
         this.#host.classList.remove('laptop-screen-zooming');
+        this.#syncFocus(tween.to === 1);
         this.#input.enabled = tween.to === 0;
         tween.resolve();
 

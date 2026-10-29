@@ -19,9 +19,11 @@
     text-align: left;
     white-space: nowrap;
 
-    &:hover:not(:disabled) {
+    &:hover:not(:disabled),
+    &:focus-visible {
         background: #316ac5;
         color: #fff;
+        outline: none;
     }
 
     &:disabled {

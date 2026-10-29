@@ -1,5 +1,6 @@
 import { easeOut } from '../../engine/ease/ease-out.js';
 import { playSound } from '../../engine/audio/play-sound.js';
+import { raster } from '../../engine/raster.js';
 
 const FLOOR_SOUND = 'assets/sounds/floor-board.mp3';
 
@@ -12,17 +13,17 @@ const LAPTOP_LIFTED = { x: 1110, y: 600, w: 140, h: 55, squash: 1, tint: [0.8, 0
 const TABLE = { x: 30, y: 950, w: 1085, h: 100 };
 const LAPTOP_ON_TABLE = { x: 571, y: 701, w: 406, h: 284 };
 const LAPTOP_SCREEN = { x: 570, y: 722, w: 365, h: 256 };
-const CROWBAR_IN_BATH = { x: 1437, y: 948, w: 73, h: 17 };
-const CROWBAR_VISIBLE = { x: 1470, y: 945, w: 50, h: 36 };
+const CROWBAR_IN_BATH = { x: 1415, y: 952, w: 110, h: 25 };
+const CROWBAR_VISIBLE = { x: 1470, y: 944, w: 65, h: 42 };
 const CROWBAR_SLIDE = 110;
 const BATH_WALL = { x: 1390, y: 580, w: 80, h: 440 };
-const FLOOR_BOARD = { x: 1710, y: 1260, w: 102, h: 90 };
+const FLOOR_BOARD = { x: 1705, y: 1255, w: 112, h: 100 };
 const FLOOR_OPEN = { x: 1675, y: 1240, w: 160, h: 130 };
 const FLASH_IN_FLOOR = { x: 1722, y: 1300, w: 46, h: 16 };
 const FLASH_HALFWAY = { x: 1716, y: 1270, w: 56, h: 19, rotation: 0.35, squash: 0.85 };
 const FLASH_LIFTED = { x: 1710, y: 1245, w: 64, h: 22, rotation: 0.2, squash: 1 };
 
-export const room = ({ state, items: { laptop, crowbar, flash }, inventory, go }) => {
+export const room = ({ state, items: { laptop, crowbar, flash }, inventory, status, go }) => {
     const { flags } = state;
     let lifting = false;
 
@@ -91,6 +92,7 @@ export const room = ({ state, items: { laptop, crowbar, flash }, inventory, go }
 
     const creakFloor = () => {
         playSound('assets/sounds/floor-creak.mp3', { volume: 0.6 }).catch(() => {});
+        status.show('Creak');
     };
 
     const takeFlash = async () => {
@@ -104,11 +106,11 @@ export const room = ({ state, items: { laptop, crowbar, flash }, inventory, go }
     };
 
     return {
-        background: 'assets/room.jpg',
+        background: raster('assets/room', 'jpg'),
         patches: [
-            { src: 'assets/patches/cabinet-open.png', rect: CABINET_OPEN, when: () => flags.cabinetOpen },
-            { src: 'assets/patches/laptop-table.png', rect: LAPTOP_ON_TABLE, when: laptopPlaced },
-            { src: 'assets/patches/floor-open.png', rect: FLOOR_OPEN, when: floorOpen },
+            { src: 'assets/patches/cabinet-open.webp', rect: CABINET_OPEN, when: () => flags.cabinetOpen },
+            { src: 'assets/patches/laptop-table.webp', rect: LAPTOP_ON_TABLE, when: laptopPlaced },
+            { src: 'assets/patches/floor-open.webp', rect: FLOOR_OPEN, when: floorOpen },
         ],
         foreground: [{ rect: BATH_WALL, when: () => !crowbarOut() }],
         items: [

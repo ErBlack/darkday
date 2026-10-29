@@ -2,7 +2,7 @@ const KEY = 'darkdayPersonal';
 
 const read = () => {
     try {
-        return JSON.parse(localStorage.getItem(KEY)) ?? {};
+        return JSON.parse(sessionStorage.getItem(KEY)) ?? {};
     } catch {
         return {};
     }
@@ -12,7 +12,7 @@ const data = read();
 
 const save = () => {
     try {
-        localStorage.setItem(KEY, JSON.stringify(data));
+        sessionStorage.setItem(KEY, JSON.stringify(data));
     } catch {}
 };
 
