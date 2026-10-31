@@ -40,7 +40,7 @@ export const browser = {
         else pending = url;
     },
     mount(content, win, shell) {
-        const history = new History(shell.state);
+        const history = new History(shell.state, shell.user);
 
         content.classList.add('os-pane', 'browser');
 

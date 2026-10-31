@@ -1,24 +1,28 @@
-import { storyHistory } from '../../data/story-history.js';
-
 const LIMIT = 20;
 
 export class History {
     #state;
+    #user;
 
-    constructor(state) {
+    constructor(state, user) {
         this.#state = state;
+        this.#user = user;
+    }
+
+    get #visits() {
+        return (this.#state.histories[this.#user.name] ??= []);
     }
 
     get entries() {
-        return [...storyHistory, ...this.#state.history];
+        return [...(this.#user.history ?? []), ...this.#visits];
     }
 
     visit(url, title) {
         if (url.startsWith('about:')) return;
-        if (this.#state.history.at(-1)?.url === url) return;
+        if (this.#visits.at(-1)?.url === url) return;
 
-        this.#state.history.push({ time: new Date().toISOString(), url, title });
+        this.#visits.push({ time: new Date().toISOString(), url, title });
 
-        while (this.#state.history.length > LIMIT) this.#state.history.shift();
+        while (this.#visits.length > LIMIT) this.#visits.shift();
     }
 }

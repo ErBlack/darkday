@@ -17,7 +17,7 @@ export const createState = () => ({
     os: {
         windows: [],
         hung: [],
-        history: [],
+        histories: {},
         cipher: {},
         khaos: 'idle',
         khaosProcess: false,
